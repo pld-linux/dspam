@@ -143,7 +143,8 @@ Statyczna biblioteka DSPAM.
 	--with-storage-driver=mysql_drv \
 	--with-mysql-includes=%{_includedir}/mysql \
 	--with-mysql-libraries=%{_libdir}
-%else if %{with pgsql}
+%else
+%if %{with pgsql}
 	--enable-neural-networking \
 	--enable-virtual-users \
 	--with-storage-driver=pgsql_drv \
@@ -153,6 +154,7 @@ Statyczna biblioteka DSPAM.
 	--with-storage-driver=libdb4_drv \
 	--with-db4-includes=%{_includedir} \
 	--with-db4-libraries=%{_libdir}
+%endif
 %endif
 %{__make}
 
