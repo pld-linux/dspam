@@ -120,7 +120,6 @@ Statyczna biblioteka DSPAM.
 	--enable-trusted-user-security \
 	--enable-bayesian-dobly \
 	--enable-chained-tokens \
-	--enable-neural-networking \
 	--enable-experimental \
 	--enable-signature-attachments \
 	--enable-bias \
@@ -135,8 +134,9 @@ Statyczna biblioteka DSPAM.
 	--with-signature-life=14 \
 	--disable-dependency-tracking \
 %if %{with mysql}
-	--with-storage-driver=mysql_drv \
+	--enable-neural-networking \
 	--enable-virtual-users \
+	--with-storage-driver=mysql_drv \
 	--with-mysql-includes=%{_includedir}/mysql \
 	--with-mysql-libraries=%{_libdir}
 %else
@@ -174,10 +174,11 @@ chmod 755 $RPM_BUILD_ROOT%{_sysconfdir}/cron.daily/%{name}
 perl -pi -e "s|%{_prefix}/local|%{_prefix}|g" $RPM_BUILD_ROOT%{_bindir}/%{name}_corpus
 perl -pi -e "s|%{_prefix}/local|%{_prefix}|g" cgi/dspam.cgi
 
-cp tools.mysql_drv/README README.mysql
-
 # fix purge stuff
-install -m0755 dspam-cron.weekly $RPM_BUILD_ROOT%{_sysconfdir}/cron.weekly/%{name}
+#install -m0755 dspam-cron.weekly $RPM_BUILD_ROOT%{_sysconfdir}/cron.weekly/%{name}
+
+%if %{with mysql}
+cp tools.mysql_drv/README README.mysql
 
 # fix missing file
 install -d $RPM_BUILD_ROOT/var/lib/%{name}
@@ -194,6 +195,7 @@ USERNAME
 PASSWORD
 DATABASE
 EOF
+%endif
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -205,15 +207,17 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(644,root,root,755)
 %doc README CHANGE
 %doc cgi/base.css cgi/dspam.cgi cgi/logo.gif cgi/template.html
+%if %{with mysql}
 %doc README.mysql
 %doc tools.mysql_drv/mysql_objects.sql.space.optimized
 %doc tools.mysql_drv/mysql_objects.sql.speed.optimized
 %doc tools.mysql_drv/purge.sql
 %doc tools.mysql_drv/virtual_users.sql
+%endif
 %dir %attr(0750,root,mail) /var/lib/%{name}
-%attr(640,root,mail) %config(noreplace) /var/lib/%{name}/mysql.data
+%{?with_mysql:%attr(640,root,mail) %config(noreplace) /var/lib/%{name}/mysql.data}
 %attr(755,root,root) %config(noreplace) %{_sysconfdir}/cron.daily/%{name}
-%attr(755,root,root) %config(noreplace) %{_sysconfdir}/cron.weekly/%{name}
+#%attr(755,root,root) %config(noreplace) %{_sysconfdir}/cron.weekly/%{name}
 %attr(755,root,mail) %{_bindir}/%{name}
 %attr(755,root,root) %{_bindir}/%{name}_clean
 %attr(755,root,root) %{_bindir}/%{name}_corpus
@@ -224,6 +228,7 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_bindir}/%{name}_merge
 %attr(755,root,root) %{_bindir}/%{name}_2mysql
 %attr(755,root,root) %{_bindir}/%{name}_ngstats
+%attr(755,root,root) %{_bindir}/libdb4_purge
 
 %files libs
 %defattr(644,root,root,755)
