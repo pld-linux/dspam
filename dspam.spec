@@ -1,8 +1,8 @@
 # TODO: everything
 #
 # Conditional build:
-%bcond_with	mysql	# enable MySQL storage driver (disable db4 driver)
-%bcond_with	pgsql	# enable PostgreSQL storage driver (disable db4 driver)
+%bcond_with	mysql	# enable MySQL storage driver (disable sqlite driver)
+%bcond_with	pgsql	# enable PostgreSQL storage driver (disable sqlite driver)
 #
 Summary:	A library and Mail Delivery Agent for Bayesian spam filtering
 Summary(pl):	Biblioteka i MDA do bayesowskiego filtrowania spamu
