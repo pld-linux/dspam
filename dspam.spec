@@ -1,3 +1,4 @@
+# TODO: everything
 #
 # Conditional build:
 %bcond_with	mysql	# enable MySQL storage driver (disable db4 driver)
@@ -6,22 +7,21 @@
 Summary:	A library and Mail Delivery Agent for Bayesian spam filtering
 Summary(pl):	Biblioteka i MDA do bayesowskiego filtrowania spamu
 Name:		dspam
-Version:	3.2.5
-Release:	1
+Version:	3.2.6
+Release:	0.1
 License:	GPL
 Group:		Applications/Mail
 Source0:	http://www.nuclearelephant.com/projects/dspam/sources/%{name}-%{version}.tar.gz
-# Source0-md5:	c89b246f42b62bf5d1e24d1f57877aed
+# Source0-md5:	aad53b4542076840e2a0e1fd43e48ebb
 Patch0:		%{name}-Makefile.patch
 URL:		http://www.nuclearelephant.com/projects/dspam/
-BuildRequires:	db-static
 %if %{with mysql}
 BuildRequires:	mysql-devel
 %else 
 %if %{with pgsql}
 BuildRequires:	postgresql-devel
 %else
-BuildRequires:	db-devel
+BuildRequires:	sqlite-devel
 %endif
 %endif
 Buildroot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
@@ -141,22 +141,20 @@ Statyczna biblioteka DSPAM.
 	--with-signature-life=14 \
 	--disable-dependency-tracking \
 %if %{with mysql}
-	--enable-neural-networking \
 	--enable-virtual-users \
 	--with-storage-driver=mysql_drv \
 	--with-mysql-includes=%{_includedir}/mysql \
 	--with-mysql-libraries=%{_libdir}
 %else
 %if %{with pgsql}
-	--enable-neural-networking \
 	--enable-virtual-users \
 	--with-storage-driver=pgsql_drv \
 	--with-pgsql-includes=%{_includedir}/postgresql \
 	--with-pgsql-libraries=%{_libdir}
 %else
-	--with-storage-driver=libdb4_drv \
-	--with-db4-includes=%{_includedir} \
-	--with-db4-libraries=%{_libdir}
+	--with-storage-driver=sqlite_drv \
+	--with-sqlite-includes=%{_includedir} \
+	--with-sqlite-libraries=%{_libdir}
 %endif
 %endif
 %{__make}
@@ -164,8 +162,8 @@ Statyczna biblioteka DSPAM.
 %install
 rm -rf $RPM_BUILD_ROOT
 
-#%makeinstall_std
-%{__make} install DESTDIR=$RPM_BUILD_ROOT
+%{__make} install \
+	DESTDIR=$RPM_BUILD_ROOT
 
 # install devel files
 install -d $RPM_BUILD_ROOT{%{_includedir}/%{name},/var/lib/%{name}}
@@ -255,12 +253,13 @@ rm -rf $RPM_BUILD_ROOT
 %doc tools.pgsql_drv/pgsql_objects.sql
 %doc tools.pgsql_drv/purge.sql
 %endif
+%config(noreplace) %verify(not size mtime md5) /etc/dspam.conf
 %dir %attr(0750,root,mail) /var/lib/%{name}
 %{?with_mysql:%attr(640,root,mail) %config(noreplace) /var/lib/%{name}/mysql.data}
 %{?with_pgsql:%attr(640,root,mail) %config(noreplace) /var/lib/%{name}/pgsql.data}
 %attr(755,root,root) %config(noreplace) %{_sysconfdir}/cron.daily/%{name}
-#%attr(755,root,root) %config(noreplace) %{_sysconfdir}/cron.weekly/%{name}
 %attr(755,root,mail) %{_bindir}/%{name}
+%attr(755,root,root) %{_bindir}/%{name}_admin
 %attr(755,root,root) %{_bindir}/%{name}_clean
 %attr(755,root,root) %{_bindir}/%{name}_corpus
 %attr(755,root,root) %{_bindir}/%{name}_crc
@@ -270,7 +269,6 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_bindir}/%{name}_merge
 %attr(755,root,root) %{_bindir}/%{name}_2sql
 %attr(755,root,root) %{_bindir}/%{name}_stats
-#%attr(755,root,root) %{_bindir}/libdb4_purge
 %{_mandir}/man?/*
 
 %files libs
@@ -283,6 +281,7 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_libdir}/lib*.so
 %{_libdir}/lib*.la
 %{_includedir}/%{name}
+%{_pkgconfigdir}/*.pc
 
 %files static
 %defattr(644,root,root,755)
