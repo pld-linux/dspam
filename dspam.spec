@@ -177,7 +177,7 @@ install -d $RPM_BUILD_ROOT%{_sysconfdir}/cron.weekly
 
 cat > $RPM_BUILD_ROOT%{_sysconfdir}/cron.daily/%{name} <<EOF
 #!/bin/sh
-exec %{_bindir}/%{name}_clean 2>&1 > /dev/null
+exec %{_bindir}/%{name}_clean -s -p
 EOF
 
 chmod 755 $RPM_BUILD_ROOT%{_sysconfdir}/cron.daily/%{name}
