@@ -5,12 +5,12 @@
 Summary:	A library and Mail Delivery Agent for Bayesian spam filtering
 Summary(pl):	Biblioteka i MDA do bayesowskiego filtrowania spamu
 Name:		dspam
-Version:	2.10.6
+Version:	3.0.0
 Release:	1
 License:	GPL
 Group:		Applications/Mail
 Source0:	http://www.nuclearelephant.com/projects/dspam/sources/%{name}-%{version}.tar.gz
-# Source0-md5:	ddb40d26cc923d7569d48b3072e61715
+# Source0-md5:	f5b568e8fea50faaf4c1fcabee177934
 Patch0:		%{name}-Makefile.patch
 URL:		http://www.nuclearelephant.com/projects/dspam/
 %if %{with mysql}
@@ -154,7 +154,7 @@ rm -rf $RPM_BUILD_ROOT
 %{__make} install DESTDIR=$RPM_BUILD_ROOT
 
 # install devel files
-install -d $RPM_BUILD_ROOT%{_includedir}/%{name}
+install -d $RPM_BUILD_ROOT{%{_includedir}/%{name},/var/lib/%{name}}
 install -m0644 libdspam.h $RPM_BUILD_ROOT%{_includedir}/%{name}
 install -m0644 libdspam_objects.h $RPM_BUILD_ROOT%{_includedir}/%{name}
 install -m0644 lht.h $RPM_BUILD_ROOT%{_includedir}/%{name}
@@ -206,8 +206,8 @@ rm -rf $RPM_BUILD_ROOT
 
 %files
 %defattr(644,root,root,755)
-%doc README CHANGE
-%doc cgi/base.css cgi/dspam.cgi cgi/logo.gif cgi/template.html
+%doc README CHANGELOG RELEASE.NOTES
+%doc cgi/base.css cgi/dspam.cgi cgi/logo.gif
 %if %{with mysql}
 %doc README.mysql
 %doc tools.mysql_drv/mysql_objects.sql.space.optimized
@@ -227,13 +227,13 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_bindir}/%{name}_genaliases
 %attr(755,root,root) %{_bindir}/%{name}_stats
 %attr(755,root,root) %{_bindir}/%{name}_merge
-%attr(755,root,root) %{_bindir}/%{name}_2mysql
-%attr(755,root,root) %{_bindir}/%{name}_ngstats
-%attr(755,root,root) %{_bindir}/libdb4_purge
+%attr(755,root,root) %{_bindir}/%{name}_2sql
+%attr(755,root,root) %{_bindir}/%{name}_stats
+#%attr(755,root,root) %{_bindir}/libdb4_purge
 
 %files libs
 %defattr(644,root,root,755)
-%doc README CHANGE
+%doc README CHANGELOG
 %attr(755,root,root) %{_libdir}/lib*.so.*.*.*
 
 %files devel
