@@ -24,6 +24,7 @@ BuildRequires:	postgresql-devel
 BuildRequires:	sqlite-devel
 %endif
 %endif
+BuildRequires:	sed >= 4.0
 Buildroot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %description
@@ -174,10 +175,10 @@ install -m0644 lht.h $RPM_BUILD_ROOT%{_includedir}/%{name}
 install -m0644 nodetree.h $RPM_BUILD_ROOT%{_includedir}/%{name}
 
 # provide maintenance scripts
-install -d $RPM_BUILD_ROOT%{_sysconfdir}/cron.daily
-install -d $RPM_BUILD_ROOT%{_sysconfdir}/cron.weekly
+install -d $RPM_BUILD_ROOT/etc/cron.daily
+install -d $RPM_BUILD_ROOT/etc/cron.weekly
 
-cat > $RPM_BUILD_ROOT%{_sysconfdir}/cron.daily/%{name} <<EOF
+cat > $RPM_BUILD_ROOT/etc/cron.daily/%{name} <<EOF
 #!/bin/sh
 exec %{_bindir}/%{name}_clean -s -p
 EOF
@@ -185,8 +186,8 @@ EOF
 chmod 755 $RPM_BUILD_ROOT%{_sysconfdir}/cron.daily/%{name}
 
 # fix prefix
-perl -pi -e "s|%{_prefix}/local|%{_prefix}|g" $RPM_BUILD_ROOT%{_bindir}/%{name}_corpus
-perl -pi -e "s|%{_prefix}/local|%{_prefix}|g" cgi/dspam.cgi
+sed -i -e "s|%{_prefix}/local|%{_prefix}|g" $RPM_BUILD_ROOT%{_bindir}/%{name}_corpus
+sed -i -e "s|%{_prefix}/local|%{_prefix}|g" cgi/dspam.cgi
 
 # fix purge stuff
 #install -m0755 dspam-cron.weekly $RPM_BUILD_ROOT%{_sysconfdir}/cron.weekly/%{name}
@@ -258,7 +259,7 @@ rm -rf $RPM_BUILD_ROOT
 %dir %attr(0750,root,mail) /var/lib/%{name}
 %{?with_mysql:%attr(640,root,mail) %config(noreplace) /var/lib/%{name}/mysql.data}
 %{?with_pgsql:%attr(640,root,mail) %config(noreplace) /var/lib/%{name}/pgsql.data}
-%attr(755,root,root) %config(noreplace) %{_sysconfdir}/cron.daily/%{name}
+%attr(755,root,root) %config(noreplace) /etc/cron.daily/%{name}
 %attr(755,root,mail) %{_bindir}/%{name}
 %attr(755,root,root) %{_bindir}/%{name}_admin
 %attr(755,root,root) %{_bindir}/%{name}_clean
