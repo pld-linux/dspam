@@ -17,10 +17,12 @@ URL:		http://www.nuclearelephant.com/projects/dspam/
 BuildRequires:	db-static
 %if %{with mysql}
 BuildRequires:	mysql-devel
-%else if %{with pgsql}
+%else 
+%if %{with pgsql}
 BuildRequires:	postgresql-devel
 %else
 BuildRequires:	db-devel
+%endif
 %endif
 Buildroot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
