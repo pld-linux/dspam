@@ -121,6 +121,7 @@ Statyczna biblioteka DSPAM.
 %prep
 %setup -q
 %patch0 -p1
+sed -i -e 's#-static##g' tools/Makefile*
 
 %build
 %configure \
