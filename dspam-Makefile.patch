@@ -1,0 +1,60 @@
+--- dspam-2.10.6/Makefile.in.orig	2004-04-24 16:45:35.000000000 +0200
++++ dspam-2.10.6/Makefile.in	2004-05-21 08:22:22.726417752 +0200
+@@ -202,7 +202,7 @@
+ 
+ 
+ dspam_LDADD = libdspam.la
+-dspam_LDFLAGS = -static
++dspam_LDFLAGS = 
+ 
+ ACLOCAL_AMFLAGS = -I m4
+ subdir = .
+--- dspam-2.10.6/tools/Makefile.in.orig	2004-04-24 16:45:36.000000000 +0200
++++ dspam-2.10.6/tools/Makefile.in	2004-05-21 08:40:22.524263528 +0200
+@@ -153,18 +153,18 @@
+ bin_SCRIPTS = dspam_corpus dspam_genaliases
+ 
+ dspam_2mysql_SOURCES = dspam_2mysql.c
+-dspam_2mysql_LDFLAGS = -static
++dspam_2mysql_LDFLAGS = 
+ dspam_ngstats_SOURCES = dspam_ngstats.c
+-dspam_ngstats_LDFLAGS = -static $(NETLIBS)
++dspam_ngstats_LDFLAGS = $(NETLIBS)
+ dspam_dump_SOURCES = dspam_dump.c
+-dspam_dump_LDFLAGS = -static
++dspam_dump_LDFLAGS = 
+ dspam_clean_SOURCES = dspam_clean.c
+-dspam_clean_LDFLAGS = -static
++dspam_clean_LDFLAGS = 
+ dspam_crc_SOURCES = dspam_crc.c
+-dspam_crc_LDFLAGS = -static
++dspam_crc_LDFLAGS = 
+ dspam_stats_SOURCES = dspam_stats.c
+ dspam_merge_SOURCES = dspam_merge.c
+-dspam_merge_LDFLAGS = -static
++dspam_merge_LDFLAGS = 
+ 
+ LDADD = ../libdspam.la
+ 
+--- dspam-2.10.6/tools.libdb3_drv/Makefile.in.orig	2004-04-24 16:45:35.000000000 +0200
++++ dspam-2.10.6/tools.libdb3_drv/Makefile.in	2004-05-21 08:41:12.799620512 +0200
+@@ -153,7 +153,7 @@
+ bin_SCRIPTS = 
+ 
+ libdb3_purge_SOURCES = libdb3_purge.c
+-libdb3_purge_LDFLAGS = -static
++libdb3_purge_LDFLAGS = 
+ 
+ LDADD = ../libdspam.la
+ 
+--- dspam-2.10.6/tools.libdb4_drv/Makefile.in.orig	2004-04-24 16:45:35.000000000 +0200
++++ dspam-2.10.6/tools.libdb4_drv/Makefile.in	2004-05-21 08:41:54.899220400 +0200
+@@ -153,7 +153,7 @@
+ bin_SCRIPTS = 
+ 
+ libdb4_purge_SOURCES = libdb4_purge.c
+-libdb4_purge_LDFLAGS = -static
++libdb4_purge_LDFLAGS = 
+ 
+ LDADD = ../libdspam.la
+ 

@@ -11,11 +11,12 @@ License:	GPL
 Group:		Applications/Mail
 Source0:	http://www.nuclearelephant.com/projects/dspam/sources/%{name}-%{version}.tar.gz
 # Source0-md5:	ddb40d26cc923d7569d48b3072e61715
+Patch0:		%{name}-Makefile.patch
 URL:		http://www.nuclearelephant.com/projects/dspam/
 %if %{with mysql}
-BuildRequires:	mysql-static
+BuildRequires:	mysql-devel
 %else
-BuildRequires:	db-static
+BuildRequires:	db-devel
 %endif
 Buildroot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
@@ -113,10 +114,10 @@ Statyczna biblioteka DSPAM.
 
 %prep
 %setup -q
+%patch0 -p1
 
 %build
 %configure \
-	--enable-static=yes \
 	--enable-trusted-user-security \
 	--enable-bayesian-dobly \
 	--enable-chained-tokens \
