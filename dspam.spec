@@ -6,6 +6,7 @@ Release:	1
 License:	GPL
 Group:		Applications/Mail
 Source0:	http://www.nuclearelephant.com/projects/dspam/sources/%{name}-%{version}.tar.gz
+# Source0-md5:	ddb40d26cc923d7569d48b3072e61715
 URL:		http://www.nuclearelephant.com/projects/dspam/
 BuildRequires:	mysql-devel
 Buildroot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
