@@ -3,17 +3,17 @@
 # Conditional build:
 %bcond_with	mysql	# enable MySQL storage driver (disable sqlite driver)
 %bcond_with	pgsql	# enable PostgreSQL storage driver (disable sqlite driver)
+%bcond_with	sqlite3	# enable SQLite3 storage driver (disable sqlite2 driver)
 #
 Summary:	A library and Mail Delivery Agent for Bayesian spam filtering
 Summary(pl):	Biblioteka i MDA do bayesowskiego filtrowania spamu
 Name:		dspam
-Version:	3.2.8
+Version:	3.4.1
 Release:	0.1
 License:	GPL
 Group:		Applications/Mail
 Source0:	http://www.nuclearelephant.com/projects/dspam/sources/%{name}-%{version}.tar.gz
-# Source0-md5:	e2cf80ef0a10ff8c123cb4fda5f2411d
-Patch0:		%{name}-Makefile.patch
+# Source0-md5:	46764fdcf5db676ac784e7a633e19da3
 URL:		http://www.nuclearelephant.com/projects/dspam/
 %if %{with mysql}
 BuildRequires:	mysql-devel
@@ -21,7 +21,12 @@ BuildRequires:	mysql-devel
 %if %{with pgsql}
 BuildRequires:	postgresql-devel
 %else
+%if %{with sqlite3}
+BuildRequires:	sqlite3-devel
+%else
 BuildRequires:	sqlite-devel
+BuildRequires:	sqlite-static
+%endif
 %endif
 %endif
 BuildRequires:	sed >= 4.0
@@ -121,8 +126,7 @@ Statyczna biblioteka DSPAM.
 
 %prep
 %setup -q
-%patch0 -p1
-sed -i -e 's#-static##g' tools/Makefile*
+sed -i -e 's#-static##g' src/tools/Makefile*
 
 %build
 %configure \
@@ -133,7 +137,6 @@ sed -i -e 's#-static##g' tools/Makefile*
 	--enable-bias \
 	--enable-large-scale \
 	--enable-delivery-to-stdout \
-	--enable-virtual-users \
 	--with-userdir=/var/lib/%{name} \
 	--with-dspam-home=/var/lib/%{name} \
 	--with-userdir-owner=none \
@@ -154,9 +157,15 @@ sed -i -e 's#-static##g' tools/Makefile*
 	--with-pgsql-includes=%{_includedir}/postgresql \
 	--with-pgsql-libraries=%{_libdir}
 %else
+%if %{with sqlite3}
+	--with-storage-driver=sqlite3_drv \
+	--with-sqlite3-includes=%{_includedir} \
+	--with-sqlite3-libraries=%{_libdir}
+%else
 	--with-storage-driver=sqlite_drv \
 	--with-sqlite-includes=%{_includedir} \
 	--with-sqlite-libraries=%{_libdir}
+%endif
 %endif
 %endif
 %{__make}
@@ -169,10 +178,7 @@ rm -rf $RPM_BUILD_ROOT
 
 # install devel files
 install -d $RPM_BUILD_ROOT{%{_includedir}/%{name},/var/lib/%{name}}
-install -m0644 libdspam.h $RPM_BUILD_ROOT%{_includedir}/%{name}
-install -m0644 libdspam_objects.h $RPM_BUILD_ROOT%{_includedir}/%{name}
-install -m0644 lht.h $RPM_BUILD_ROOT%{_includedir}/%{name}
-install -m0644 nodetree.h $RPM_BUILD_ROOT%{_includedir}/%{name}
+install -m0644 src/*.h $RPM_BUILD_ROOT%{_includedir}/%{name}
 
 # provide maintenance scripts
 install -d $RPM_BUILD_ROOT/etc/cron.daily
@@ -240,8 +246,9 @@ rm -rf $RPM_BUILD_ROOT
 
 %files
 %defattr(644,root,root,755)
-%doc README CHANGELOG RELEASE.NOTES README.courier README.pop3filter README.qmail README.exim README.postfix README.sendmail
+%doc README CHANGELOG RELEASE.NOTES UPGRADING
 %doc cgi/base.css cgi/dspam.cgi
+%config /etc/dspam.conf
 %if %{with mysql}
 %doc README.mysql
 %doc tools.mysql_drv/mysql_objects-space.sql
@@ -261,6 +268,8 @@ rm -rf $RPM_BUILD_ROOT
 %{?with_pgsql:%attr(640,root,mail) %config(noreplace) /var/lib/%{name}/pgsql.data}
 %attr(755,root,root) %config(noreplace) /etc/cron.daily/%{name}
 %attr(755,root,mail) %{_bindir}/%{name}
+%attr(755,root,mail) %{_bindir}/%{name}c
+%attr(755,root,mail) %{_bindir}/%{name}_logrotate
 %attr(755,root,root) %{_bindir}/%{name}_admin
 %attr(755,root,root) %{_bindir}/%{name}_clean
 %attr(755,root,root) %{_bindir}/%{name}_corpus
@@ -271,6 +280,8 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_bindir}/%{name}_merge
 %attr(755,root,root) %{_bindir}/%{name}_2sql
 %attr(755,root,root) %{_bindir}/%{name}_stats
+%attr(755,root,root) %{_bindir}/%{name}_admin
+#%attr(755,root,root) %{_bindir}/libdb4_purge
 %{_mandir}/man?/*
 
 %files libs
@@ -280,6 +291,7 @@ rm -rf $RPM_BUILD_ROOT
 
 %files devel
 %defattr(644,root,root,755)
+%{_libdir}/pkgconfig/dspam.pc
 %attr(755,root,root) %{_libdir}/lib*.so
 %{_libdir}/lib*.la
 %{_includedir}/%{name}
