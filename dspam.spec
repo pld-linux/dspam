@@ -1,6 +1,6 @@
 #
 # Conditional build:
-%bcond_with	mysql	# enable mysql storage driver (disable db4 driver)
+%bcond_with	mysql	# enable MySQL storage driver (disable db4 driver)
 %bcond_with	pgsql	# enable pgsql storage driver (disable db4 driver)
 #
 Summary:	A library and Mail Delivery Agent for Bayesian spam filtering
