@@ -1,3 +1,7 @@
+#
+# Conditional build:
+%bcond_with	mysql	# enable mysql storage driver (disable db4 driver)
+#
 Summary:	A library and Mail Delivery Agent for Bayesian spam filtering
 Summary(pl):	Biblioteka i MDA do bayesowskiego filtrowania spamu
 Name:		dspam
@@ -8,7 +12,11 @@ Group:		Applications/Mail
 Source0:	http://www.nuclearelephant.com/projects/dspam/sources/%{name}-%{version}.tar.gz
 # Source0-md5:	ddb40d26cc923d7569d48b3072e61715
 URL:		http://www.nuclearelephant.com/projects/dspam/
-BuildRequires:	mysql-devel
+%if %{with mysql}
+BuildRequires:	mysql-static
+%else
+BuildRequires:	db-static
+%endif
 Buildroot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %description
@@ -107,7 +115,8 @@ Statyczna biblioteka DSPAM.
 %setup -q
 
 %build
-%configure2_13 \
+%configure \
+	--enable-static=yes \
 	--enable-trusted-user-security \
 	--enable-bayesian-dobly \
 	--enable-chained-tokens \
@@ -125,16 +134,23 @@ Statyczna biblioteka DSPAM.
 	--with-dspam-group=none \
 	--with-signature-life=14 \
 	--disable-dependency-tracking \
-	--enable-virtual-users \
+%if %{with mysql}
 	--with-storage-driver=mysql_drv \
+	--enable-virtual-users \
 	--with-mysql-includes=%{_includedir}/mysql \
-	--with-mysql-libraries=%{_libdir}/mysql \
+	--with-mysql-libraries=%{_libdir}
+%else
+	--with-storage-driver=libdb4_drv \
+	--with-db4-includes=%{_includedir} \
+	--with-db4-libraries=%{_libdir}
+%endif
 %{__make}
 
 %install
 rm -rf $RPM_BUILD_ROOT
 
-%makeinstall_std
+#%makeinstall_std
+%{__make} install DESTDIR=$RPM_BUILD_ROOT
 
 # install devel files
 install -d $RPM_BUILD_ROOT%{_includedir}/%{name}
