@@ -243,8 +243,8 @@ rm -rf $RPM_BUILD_ROOT
 %doc cgi/base.css cgi/dspam.cgi
 %if %{with mysql}
 %doc README.mysql
-%doc tools.mysql_drv/mysql_objects.sql.space.optimized
-%doc tools.mysql_drv/mysql_objects.sql.speed.optimized
+%doc tools.mysql_drv/mysql_objects-space.sql
+%doc tools.mysql_drv/mysql_objects-speed.sql
 %doc tools.mysql_drv/purge.sql
 %doc tools.mysql_drv/virtual_users.sql
 %endif
