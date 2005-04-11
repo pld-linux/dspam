@@ -269,7 +269,6 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,mail) %{_bindir}/%{name}
 %attr(755,root,mail) %{_bindir}/%{name}c
 %attr(755,root,mail) %{_bindir}/%{name}_logrotate
-%attr(755,root,root) %{_bindir}/%{name}_admin
 %attr(755,root,root) %{_bindir}/%{name}_clean
 %attr(755,root,root) %{_bindir}/%{name}_corpus
 %attr(755,root,root) %{_bindir}/%{name}_crc
@@ -278,7 +277,6 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_bindir}/%{name}_stats
 %attr(755,root,root) %{_bindir}/%{name}_merge
 %attr(755,root,root) %{_bindir}/%{name}_2sql
-%attr(755,root,root) %{_bindir}/%{name}_stats
 %attr(755,root,root) %{_bindir}/%{name}_admin
 #%attr(755,root,root) %{_bindir}/libdb4_purge
 %{_mandir}/man?/*
