@@ -8,16 +8,16 @@
 Summary:	A library and Mail Delivery Agent for Bayesian spam filtering
 Summary(pl):	Biblioteka i MDA do bayesowskiego filtrowania spamu
 Name:		dspam
-Version:	3.4.1
+Version:	3.4.3
 Release:	0.1
 License:	GPL
 Group:		Applications/Mail
 Source0:	http://www.nuclearelephant.com/projects/dspam/sources/%{name}-%{version}.tar.gz
-# Source0-md5:	46764fdcf5db676ac784e7a633e19da3
+# Source0-md5:	befcaee35a69efe559471367b2249ea3
 URL:		http://www.nuclearelephant.com/projects/dspam/
 %if %{with mysql}
 BuildRequires:	mysql-devel
-%else 
+%else
 %if %{with pgsql}
 BuildRequires:	postgresql-devel
 %else
@@ -248,7 +248,7 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(644,root,root,755)
 %doc README CHANGELOG RELEASE.NOTES UPGRADING
 %doc cgi/base.css cgi/dspam.cgi
-%config /etc/dspam.conf
+%config %{_sysconfdir}/dspam.conf
 %if %{with mysql}
 %doc README.mysql
 %doc tools.mysql_drv/mysql_objects-space.sql
@@ -262,8 +262,8 @@ rm -rf $RPM_BUILD_ROOT
 %doc tools.pgsql_drv/pgsql_objects.sql
 %doc tools.pgsql_drv/purge.sql
 %endif
-%config(noreplace) %verify(not size mtime md5) /etc/dspam.conf
-%dir %attr(0750,root,mail) /var/lib/%{name}
+%config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/dspam.conf
+%dir %attr(750,root,mail) /var/lib/%{name}
 %{?with_mysql:%attr(640,root,mail) %config(noreplace) /var/lib/%{name}/mysql.data}
 %{?with_pgsql:%attr(640,root,mail) %config(noreplace) /var/lib/%{name}/pgsql.data}
 %attr(755,root,root) %config(noreplace) /etc/cron.daily/%{name}
