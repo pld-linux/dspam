@@ -178,7 +178,7 @@ rm -rf $RPM_BUILD_ROOT
 
 # install devel files
 install -d $RPM_BUILD_ROOT{%{_includedir}/%{name},/var/lib/%{name}}
-install -m0644 src/*.h $RPM_BUILD_ROOT%{_includedir}/%{name}
+install src/*.h $RPM_BUILD_ROOT%{_includedir}/%{name}
 
 # provide maintenance scripts
 install -d $RPM_BUILD_ROOT/etc/cron.daily
@@ -196,7 +196,7 @@ sed -i -e "s|%{_prefix}/local|%{_prefix}|g" $RPM_BUILD_ROOT%{_bindir}/%{name}_co
 sed -i -e "s|%{_prefix}/local|%{_prefix}|g" cgi/dspam.cgi
 
 # fix purge stuff
-#install -m0755 dspam-cron.weekly $RPM_BUILD_ROOT%{_sysconfdir}/cron.weekly/%{name}
+#install dspam-cron.weekly $RPM_BUILD_ROOT%{_sysconfdir}/cron.weekly/%{name}
 
 %if %{with mysql}
 cp tools.mysql_drv/README README.mysql
@@ -248,7 +248,6 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(644,root,root,755)
 %doc README CHANGELOG RELEASE.NOTES UPGRADING
 %doc cgi/base.css cgi/dspam.cgi
-%config %{_sysconfdir}/dspam.conf
 %if %{with mysql}
 %doc README.mysql
 %doc tools.mysql_drv/mysql_objects-space.sql
