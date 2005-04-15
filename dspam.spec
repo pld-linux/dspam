@@ -9,7 +9,7 @@ Summary:	A library and Mail Delivery Agent for Bayesian spam filtering
 Summary(pl):	Biblioteka i MDA do bayesowskiego filtrowania spamu
 Name:		dspam
 Version:	3.4.3
-Release:	0.1
+Release:	0.2
 License:	GPL
 Group:		Applications/Mail
 Source0:	http://www.nuclearelephant.com/projects/dspam/sources/%{name}-%{version}.tar.gz
@@ -199,8 +199,6 @@ sed -i -e "s|%{_prefix}/local|%{_prefix}|g" cgi/dspam.cgi
 #install dspam-cron.weekly $RPM_BUILD_ROOT%{_sysconfdir}/cron.weekly/%{name}
 
 %if %{with mysql}
-cp tools.mysql_drv/README README.mysql
-
 # fix missing file
 install -d $RPM_BUILD_ROOT/var/lib/%{name}
 cat > $RPM_BUILD_ROOT/var/lib/%{name}/mysql.data <<EOF
@@ -219,8 +217,6 @@ EOF
 %endif
 
 %if %{with pgsql}
-cp tools.pgsql_drv/README README.pgsql
-
 # fix missing file
 install -d $RPM_BUILD_ROOT/var/lib/%{name}
 cat > $RPM_BUILD_ROOT/var/lib/%{name}/pgsql.data <<EOF
@@ -249,17 +245,15 @@ rm -rf $RPM_BUILD_ROOT
 %doc README CHANGELOG RELEASE.NOTES UPGRADING
 %doc cgi/base.css cgi/dspam.cgi
 %if %{with mysql}
-%doc README.mysql
-%doc tools.mysql_drv/mysql_objects-space.sql
-%doc tools.mysql_drv/mysql_objects-speed.sql
-%doc tools.mysql_drv/purge.sql
-%doc tools.mysql_drv/virtual_users.sql
+%doc doc/mysql_drv.txt
+%doc src/tools.mysql_drv/*.sql
 %endif
 %if %{with pgsql}
-%doc README.pgsql
-%doc tools.pgsql_drv/virtual_users.sql
-%doc tools.pgsql_drv/pgsql_objects.sql
-%doc tools.pgsql_drv/purge.sql
+%doc doc/pgsql_drv.txt
+%doc src/tools.pgsql_drv/*.sql
+%endif
+%if %{!with mysql} && %{!with pgsql}
+%doc doc/sqlite_drv.txt
 %endif
 %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/dspam.conf
 %dir %attr(750,root,mail) /var/lib/%{name}
@@ -278,8 +272,8 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_bindir}/%{name}_merge
 %attr(755,root,root) %{_bindir}/%{name}_2sql
 %attr(755,root,root) %{_bindir}/%{name}_admin
-#%attr(755,root,root) %{_bindir}/libdb4_purge
-%{_mandir}/man?/*
+%{?with_pgsql:%attr(755,root,root) %{_bindir}/%{name}_pg2int8}
+%{_mandir}/man?/%{name}*
 
 %files libs
 %defattr(644,root,root,755)
@@ -291,6 +285,7 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_libdir}/lib*.so
 %{_libdir}/lib*.la
 %{_includedir}/%{name}
+%{_mandir}/man3/libdspam*
 %{_pkgconfigdir}/*.pc
 
 %files static
