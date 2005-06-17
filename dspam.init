@@ -1,0 +1,66 @@
+#!/bin/sh
+#
+# dspam		dspam
+#
+# chkconfig:	345 55 45
+#
+# description:	dspam
+
+
+# Source function library
+. /etc/rc.d/init.d/functions
+
+# Get network config
+. /etc/sysconfig/network
+
+# Get service config
+[ -f /etc/sysconfig/dspam ] && . /etc/sysconfig/dspam
+
+RETVAL=0
+# See how we were called.
+case "$1" in
+  start)
+	# Check if the service is already running?
+	if [ ! -f /var/lock/subsys/dspam ]; then
+		msg_starting dspam
+		daemon --fork /usr/bin/dspam --daemon
+		RETVAL=$?
+		[ $RETVAL -eq 0 ] && touch /var/lock/subsys/dspam
+	else
+		msg_already_running dspam
+	fi
+	;;
+  stop)
+	if [ -f /var/lock/subsys/dspam ]; then
+		msg_stopping dspam
+		killproc dspam
+		rm -f /var/run/dspam.pid /var/lock/subsys/dspam >/dev/null 2>&1
+	else
+		msg_not_running dspam
+	fi
+	;;
+  restart)
+	$0 stop
+	$0 start
+	exit $?
+	;;
+  status)
+	status dspam
+	exit $?
+	;;
+  reload|force-reload)
+	if [ -f /var/lock/subsys/dspam ]; then
+		msg_reloading dspam
+		killproc dspam -HUP
+		RETVAL=$?
+	else
+		msg_not_running dspam >&2
+		exit 7
+	fi
+	;;
+  *)
+	msg_usage "$0 {start|stop|init|restart|reload|force-reload|status}"
+	exit 3
+esac
+
+exit $RETVAL
