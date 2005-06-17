@@ -1,10 +1,16 @@
 # TODO: everything
 #
 # Conditional build:
-%bcond_with	mysql	# enable MySQL storage driver (disable sqlite driver)
+%bcond_without	mysql	# enable MySQL storage driver (disable sqlite driver)
 %bcond_with	pgsql	# enable PostgreSQL storage driver (disable sqlite driver)
-%bcond_with	sqlite2	# enable SQLite2 storage driver (disable sqlite3 driver)
+%bcond_with	sqlite	# enable SQLite3 storage driver
+%bcond_with	daemon	
 #
+
+%if %{with mysql} || %{with pgsql}
+%define	with_daemon 1
+%endif
+
 Summary:	A library and Mail Delivery Agent for Bayesian spam filtering
 Summary(pl):	Biblioteka i MDA do bayesowskiego filtrowania spamu
 Name:		dspam
@@ -14,19 +20,19 @@ License:	GPL
 Group:		Applications/Mail
 Source0:	http://www.nuclearelephant.com/projects/dspam/sources/%{name}-%{version}.tar.gz
 # Source0-md5:	b6930c31fe0940b8ad6d27324f8bab3e
+Source1:	%{name}.init
 URL:		http://www.nuclearelephant.com/projects/dspam/
+BuildRequires:	autoconf
+BuildRequires:	automake
+BuildRequires:	libtool
 %if %{with mysql}
 BuildRequires:	mysql-devel
 %else
 %if %{with pgsql}
 BuildRequires:	postgresql-devel
 %else
-%if %{with sqlite2}
-BuildRequires:	sqlite-devel
-BuildRequires:	sqlite-static
-%else
+%if %{with sqlite}
 BuildRequires:	sqlite3-devel
-BuildRequires:	sqlite3-static
 %endif
 %endif
 %endif
@@ -70,6 +76,20 @@ tokenów ³añcuchowych, eliminowanie ukrywanie i inne rozszerzenia.
 DSPAM dzia³a wspaniale z Sendmailem i Eximem, powinien dzia³aæ dobrze
 z ka¿dym innym MTA obs³uguj±cym zewnêtrznego agenta MDA (postfiksem,
 qmailem itd.).
+
+%package client
+Summary:        dspam client
+Summary(pl):    Klient dspam
+Group:          Applications/Mail
+# to get the same dspam.conf when both installed
+Conflicts:	dspam > %{version}-%{release}
+Conflicts:	dspam < %{version}-%{release}
+
+%description client
+dspam client.
+
+%description -l pl client
+Klient dspam.
 
 %package libs
 Summary:	A library for Bayesian spam filtering
@@ -127,9 +147,13 @@ Statyczna biblioteka DSPAM.
 
 %prep
 %setup -q
-sed -i -e 's#-static##g' src/tools/Makefile*
+sed -i -e 's#\-static##g' src/Makefile* src/*/Makefile*
 
 %build
+%{__libtoolize}
+%{__aclocal} -I m4
+%{__autoconf}
+%{__automake}
 %configure \
 	--enable-trusted-user-security \
 	--enable-bayesian-dobly \
@@ -147,22 +171,20 @@ sed -i -e 's#-static##g' src/tools/Makefile*
 	--with-signature-life=14 \
 	--disable-dependency-tracking \
 %if %{with mysql}
+	--enable-daemon \
 	--enable-virtual-users \
 	--with-storage-driver=mysql_drv \
 	--with-mysql-includes=%{_includedir}/mysql \
 	--with-mysql-libraries=%{_libdir}
 %else
 %if %{with pgsql}
+	--enable-daemon \
 	--enable-virtual-users \
 	--with-storage-driver=pgsql_drv \
 	--with-pgsql-includes=%{_includedir}/postgresql \
 	--with-pgsql-libraries=%{_libdir}
 %else
-%if %{with sqlite2}
-        --with-storage-driver=sqlite_drv \
-        --with-sqlite-includes=%{_includedir} \
-        --with-sqlite-libraries=%{_libdir}
-%else
+%if %{with sqlite}
 	--with-storage-driver=sqlite3_drv \
 	--with-sqlite3-includes=%{_includedir} \
 	--with-sqlite3-libraries=%{_libdir}
@@ -176,6 +198,10 @@ rm -rf $RPM_BUILD_ROOT
 
 %{__make} install \
 	DESTDIR=$RPM_BUILD_ROOT
+
+#
+install -d $RPM_BUILD_ROOT/etc/{rc.d/init.d,sysconfig}
+install %{SOURCE1} $RPM_BUILD_ROOT/etc/rc.d/init.d/dspam
 
 # install devel files
 install -d $RPM_BUILD_ROOT{%{_includedir}/%{name},/var/lib/%{name}}
@@ -235,6 +261,23 @@ DATABASE
 EOF
 %endif
 
+%post
+/sbin/chkconfig --add dspam
+if [ -f /var/lock/subsys/dspam ]; then
+        /etc/rc.d/init.d/dspam restart 1>&2
+else
+        echo "Run \"/etc/rc.d/init.d/dspam start\" to start dspam daemon."
+fi
+
+%preun
+if [ "$1" = "0" ]; then
+        if [ -f /var/lock/subsys/dspam ]; then
+                /etc/rc.d/init.d/dspam stop 1>&2
+        fi
+        /sbin/chkconfig --del dspam
+fi
+
+
 %clean
 rm -rf $RPM_BUILD_ROOT
 
@@ -262,7 +305,6 @@ rm -rf $RPM_BUILD_ROOT
 %{?with_pgsql:%attr(640,root,mail) %config(noreplace) /var/lib/%{name}/pgsql.data}
 %attr(755,root,root) %config(noreplace) /etc/cron.daily/%{name}
 %attr(755,root,mail) %{_bindir}/%{name}
-%attr(755,root,mail) %{_bindir}/%{name}c
 %attr(755,root,mail) %{_bindir}/%{name}_logrotate
 %attr(755,root,root) %{_bindir}/%{name}_clean
 %attr(755,root,root) %{_bindir}/%{name}_corpus
@@ -275,6 +317,14 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_bindir}/%{name}_admin
 %{?with_pgsql:%attr(755,root,root) %{_bindir}/%{name}_pg2int8}
 %{_mandir}/man?/%{name}*
+
+%if %{with daemon}
+%files client
+%defattr(644,root,root,755)
+%attr(754,root,root) /etc/rc.d/init.d/dspam
+%config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/dspam.conf
+%endif
+%attr(755,root,mail) %{_bindir}/%{name}c
 
 %files libs
 %defattr(644,root,root,755)
