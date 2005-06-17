@@ -3,7 +3,7 @@
 # Conditional build:
 %bcond_with	mysql	# enable MySQL storage driver (disable sqlite driver)
 %bcond_with	pgsql	# enable PostgreSQL storage driver (disable sqlite driver)
-%bcond_with	sqlite3	# enable SQLite3 storage driver (disable sqlite2 driver)
+%bcond_with	sqlite2	# enable SQLite2 storage driver (disable sqlite3 driver)
 #
 Summary:	A library and Mail Delivery Agent for Bayesian spam filtering
 Summary(pl):	Biblioteka i MDA do bayesowskiego filtrowania spamu
@@ -21,11 +21,12 @@ BuildRequires:	mysql-devel
 %if %{with pgsql}
 BuildRequires:	postgresql-devel
 %else
-%if %{with sqlite3}
-BuildRequires:	sqlite3-devel
-%else
+%if %{with sqlite2}
 BuildRequires:	sqlite-devel
 BuildRequires:	sqlite-static
+%else
+BuildRequires:	sqlite3-devel
+BuildRequires:	sqlite3-static
 %endif
 %endif
 %endif
@@ -157,14 +158,14 @@ sed -i -e 's#-static##g' src/tools/Makefile*
 	--with-pgsql-includes=%{_includedir}/postgresql \
 	--with-pgsql-libraries=%{_libdir}
 %else
-%if %{with sqlite3}
+%if %{with sqlite2}
+        --with-storage-driver=sqlite_drv \
+        --with-sqlite-includes=%{_includedir} \
+        --with-sqlite-libraries=%{_libdir}
+%else
 	--with-storage-driver=sqlite3_drv \
 	--with-sqlite3-includes=%{_includedir} \
 	--with-sqlite3-libraries=%{_libdir}
-%else
-	--with-storage-driver=sqlite_drv \
-	--with-sqlite-includes=%{_includedir} \
-	--with-sqlite-libraries=%{_libdir}
 %endif
 %endif
 %endif
