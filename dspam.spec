@@ -319,9 +319,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man?/%{name}*
 
 %if %{with daemon}
+%attr(754,root,root) /etc/rc.d/init.d/dspam
 %files client
 %defattr(644,root,root,755)
-%attr(754,root,root) /etc/rc.d/init.d/dspam
 %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/dspam.conf
 %endif
 %attr(755,root,mail) %{_bindir}/%{name}c
