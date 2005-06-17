@@ -8,12 +8,12 @@
 Summary:	A library and Mail Delivery Agent for Bayesian spam filtering
 Summary(pl):	Biblioteka i MDA do bayesowskiego filtrowania spamu
 Name:		dspam
-Version:	3.4.6
+Version:	3.4.8
 Release:	0.1
 License:	GPL
 Group:		Applications/Mail
 Source0:	http://www.nuclearelephant.com/projects/dspam/sources/%{name}-%{version}.tar.gz
-# Source0-md5:	05d6d5546967305e9f1c394f443f8e93
+# Source0-md5:	b6930c31fe0940b8ad6d27324f8bab3e
 URL:		http://www.nuclearelephant.com/projects/dspam/
 %if %{with mysql}
 BuildRequires:	mysql-devel
