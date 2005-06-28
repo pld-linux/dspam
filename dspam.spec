@@ -1,4 +1,9 @@
-# TODO: everything
+# TODO:
+# - everything
+# - missing /etc/dspam.conf for cron:
+#   /etc/cron.daily/dspam:
+#    2430: [6/28/2005 1:2:1] Unable to open file for reading: /etc/dspam.conf: No such file or directory
+#    2430: [6/28/2005 1:2:1] Unable to read dspam.conf
 #
 # Conditional build:
 %bcond_without	mysql	# enable MySQL storage driver (disable sqlite driver)
