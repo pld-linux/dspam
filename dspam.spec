@@ -1,16 +1,41 @@
+# NOTE about versioning:
+#  Stable Releases: 3.4.x, Development Releases: 3.5.x
+#  All odd-versioned minor releases are considered development
+#  releases, and all even-versioned minor releases are stable releases
+# - from http://www.nuclearelephant.com/projects/dspam/download.shtml
+#
 # TODO:
 # - everything
+# - oracle driver
 # - missing /etc/dspam.conf for cron:
 #   /etc/cron.daily/dspam:
 #    2430: [6/28/2005 1:2:1] Unable to open file for reading: /etc/dspam.conf: No such file or directory
 #    2430: [6/28/2005 1:2:1] Unable to read dspam.conf
 #
 # Conditional build:
-%bcond_without	mysql	# enable MySQL storage driver (disable sqlite driver)
-%bcond_with	pgsql	# enable PostgreSQL storage driver (disable sqlite driver)
+%bcond_without	mysql	# enable MySQL storage driver (disable sqlite/pgsql driver)
+%bcond_with	pgsql	# enable PostgreSQL storage driver (disable sqlite/mysql driver)
 %bcond_with	sqlite	# enable SQLite3 storage driver
-%bcond_with	daemon	
-#
+%bcond_with	daemon
+
+%if %{with mysql} && %{with pgsql}
+%undefine with_pgsql
+%{warn:disabled pgsql as mysql and pgsql aren't supported together (yet)
+}#'vim
+%endif
+
+%if %{with mysql} && %{with sqlite}
+%undefine with_sqlite
+%{warn:disabled sqlite as mysql and sqlite aren't supported together (yet)
+}#'vim
+%endif
+
+%if %{with pgsql} && %{with sqlite}
+%undefine with_sqlite
+%{warn:disabled sqlite as pgsql and sqlite aren't supported together (yet)
+}#'vim
+%endif
+
 
 %if %{with mysql} || %{with pgsql}
 %define	with_daemon 1
@@ -20,7 +45,7 @@ Summary:	A library and Mail Delivery Agent for Bayesian spam filtering
 Summary(pl):	Biblioteka i MDA do bayesowskiego filtrowania spamu
 Name:		dspam
 Version:	3.4.9
-Release:	0.1
+Release:	0.2
 License:	GPL
 Group:		Applications/Mail
 Source0:	http://www.nuclearelephant.com/projects/dspam/sources/%{name}-%{version}.tar.gz
@@ -30,17 +55,9 @@ URL:		http://www.nuclearelephant.com/projects/dspam/
 BuildRequires:	autoconf
 BuildRequires:	automake
 BuildRequires:	libtool
-%if %{with mysql}
-BuildRequires:	mysql-devel
-%else
-%if %{with pgsql}
-BuildRequires:	postgresql-devel
-%else
-%if %{with sqlite}
-BuildRequires:	sqlite3-devel
-%endif
-%endif
-%endif
+%{?with_mysql:BuildRequires:	mysql-devel}
+%{?with_pgsql:BuildRequires:	postgresql-devel}
+%{?with_sqlite:BuildRequires:	sqlite3-devel}
 BuildRequires:	sed >= 4.0
 Buildroot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
@@ -181,20 +198,18 @@ sed -i -e 's#\-static##g' src/Makefile* src/*/Makefile*
 	--with-storage-driver=mysql_drv \
 	--with-mysql-includes=%{_includedir}/mysql \
 	--with-mysql-libraries=%{_libdir}
-%else
+%endif
 %if %{with pgsql}
 	--enable-daemon \
 	--enable-virtual-users \
 	--with-storage-driver=pgsql_drv \
 	--with-pgsql-includes=%{_includedir}/postgresql \
 	--with-pgsql-libraries=%{_libdir}
-%else
+%endif
 %if %{with sqlite}
 	--with-storage-driver=sqlite3_drv \
 	--with-sqlite3-includes=%{_includedir} \
 	--with-sqlite3-libraries=%{_libdir}
-%endif
-%endif
 %endif
 %{__make}
 
@@ -204,7 +219,6 @@ rm -rf $RPM_BUILD_ROOT
 %{__make} install \
 	DESTDIR=$RPM_BUILD_ROOT
 
-#
 install -d $RPM_BUILD_ROOT/etc/{rc.d/init.d,sysconfig}
 install %{SOURCE1} $RPM_BUILD_ROOT/etc/rc.d/init.d/dspam
 
@@ -269,19 +283,18 @@ EOF
 %post
 /sbin/chkconfig --add dspam
 if [ -f /var/lock/subsys/dspam ]; then
-        /etc/rc.d/init.d/dspam restart 1>&2
+	/etc/rc.d/init.d/dspam restart 1>&2
 else
-        echo "Run \"/etc/rc.d/init.d/dspam start\" to start dspam daemon."
+	echo "Run \"/etc/rc.d/init.d/dspam start\" to start dspam daemon."
 fi
 
 %preun
 if [ "$1" = "0" ]; then
-        if [ -f /var/lock/subsys/dspam ]; then
-                /etc/rc.d/init.d/dspam stop 1>&2
-        fi
-        /sbin/chkconfig --del dspam
+	if [ -f /var/lock/subsys/dspam ]; then
+		/etc/rc.d/init.d/dspam stop 1>&2
+	fi
+	/sbin/chkconfig --del dspam
 fi
-
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -301,7 +314,7 @@ rm -rf $RPM_BUILD_ROOT
 %doc doc/pgsql_drv.txt
 %doc src/tools.pgsql_drv/*.sql
 %endif
-%if %{!with mysql} && %{!with pgsql}
+%if %{without mysql} && %{without pgsql}
 %doc doc/sqlite_drv.txt
 %endif
 %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/dspam.conf
