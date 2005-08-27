@@ -17,6 +17,7 @@
 %bcond_with	pgsql	# enable PostgreSQL storage driver (disable sqlite/mysql driver)
 %bcond_with	sqlite	# enable SQLite3 storage driver
 %bcond_with	daemon
+%bcond_with	verbose
 
 %if %{with mysql} && %{with pgsql}
 %undefine with_pgsql
@@ -177,6 +178,7 @@ sed -i -e 's#\-static##g' src/Makefile* src/*/Makefile*
 %{__autoconf}
 %{__automake}
 %configure \
+	%{?with_verbose: --enable-debug --enable-verbose-debug} \
 	--enable-trusted-user-security \
 	--enable-bayesian-dobly \
 	--enable-chained-tokens \
