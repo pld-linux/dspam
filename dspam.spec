@@ -17,7 +17,6 @@
 %bcond_with	pgsql	# enable PostgreSQL storage driver (disable sqlite/mysql driver)
 %bcond_with	sqlite	# enable SQLite3 storage driver
 %bcond_with	daemon
-%bcond_with	verbose
 
 %if %{with mysql} && %{with pgsql}
 %undefine with_pgsql
@@ -178,14 +177,11 @@ sed -i -e 's#\-static##g' src/Makefile* src/*/Makefile*
 %{__autoconf}
 %{__automake}
 %configure \
-	%{?with_verbose: --enable-debug --enable-verbose-debug} \
+	%{?debug: --enable-debug --enable-bnr-debug --enable-verbose-debug} \
 	--enable-trusted-user-security \
-	--enable-bayesian-dobly \
-	--enable-chained-tokens \
-	--enable-experimental \
+	--enable-chi-square \
 	--enable-bias \
 	--enable-large-scale \
-	--enable-delivery-to-stdout \
 	--with-userdir=/var/lib/%{name} \
 	--with-dspam-home=/var/lib/%{name} \
 	--with-userdir-owner=none \
@@ -195,6 +191,7 @@ sed -i -e 's#\-static##g' src/Makefile* src/*/Makefile*
 	--with-signature-life=14 \
 	--disable-dependency-tracking \
 %if %{with mysql}
+	--enable-neural-networking \
 	--enable-daemon \
 	--enable-virtual-users \
 	--with-storage-driver=mysql_drv \
@@ -202,6 +199,7 @@ sed -i -e 's#\-static##g' src/Makefile* src/*/Makefile*
 	--with-mysql-libraries=%{_libdir}
 %endif
 %if %{with pgsql}
+	--enable-neural-networking \
 	--enable-daemon \
 	--enable-virtual-users \
 	--with-storage-driver=pgsql_drv \
