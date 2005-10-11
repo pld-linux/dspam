@@ -19,14 +19,14 @@
 %bcond_with	daemon
 
 %if %{with mysql} && %{with pgsql}
-%undefine with_pgsql
-%{warn:disabled pgsql as mysql and pgsql aren't supported together (yet)
+%undefine with_mysql
+%{warn:disabled mysql as mysql and pgsql aren't supported together (yet)
 }#'vim
 %endif
 
 %if %{with mysql} && %{with sqlite}
-%undefine with_sqlite
-%{warn:disabled sqlite as mysql and sqlite aren't supported together (yet)
+%undefine with_mysql
+%{warn:disabled mysql as mysql and sqlite aren't supported together (yet)
 }#'vim
 %endif
 
