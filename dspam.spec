@@ -179,7 +179,6 @@ sed -i -e 's#\-static##g' src/Makefile* src/*/Makefile*
 %configure \
 	%{?debug: --enable-debug --enable-bnr-debug --enable-verbose-debug} \
 	--enable-trusted-user-security \
-	--enable-chi-square \
 	--enable-bias \
 	--enable-large-scale \
 	--with-userdir=/var/lib/%{name} \
