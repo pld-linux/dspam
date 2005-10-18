@@ -100,9 +100,9 @@ z ka¿dym innym MTA obs³uguj±cym zewnêtrznego agenta MDA (postfiksem,
 qmailem itd.).
 
 %package client
-Summary:        dspam client
-Summary(pl):    Klient dspam
-Group:          Applications/Mail
+Summary:	dspam client
+Summary(pl):	Klient dspam
+Group:		Applications/Mail
 # to get the same dspam.conf when both installed
 Conflicts:	dspam > %{version}-%{release}
 Conflicts:	dspam < %{version}-%{release}
@@ -110,7 +110,7 @@ Conflicts:	dspam < %{version}-%{release}
 %description client
 dspam client.
 
-%description -l pl client
+%description client -l pl
 Klient dspam.
 
 %package libs
