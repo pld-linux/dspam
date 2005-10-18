@@ -44,12 +44,12 @@
 Summary:	A library and Mail Delivery Agent for Bayesian spam filtering
 Summary(pl):	Biblioteka i MDA do bayesowskiego filtrowania spamu
 Name:		dspam
-Version:	3.4.9
+Version:	3.6.0
 Release:	0.2
 License:	GPL
 Group:		Applications/Mail
 Source0:	http://www.nuclearelephant.com/projects/dspam/sources/%{name}-%{version}.tar.gz
-# Source0-md5:	ef7ceba47e63edb02a59be3c36cf0f6f
+# Source0-md5:	d9ee63a8cf67ea933d711b00851ce916
 Source1:	%{name}.init
 URL:		http://www.nuclearelephant.com/projects/dspam/
 BuildRequires:	autoconf
@@ -238,7 +238,7 @@ chmod 755 $RPM_BUILD_ROOT%{_sysconfdir}/cron.daily/%{name}
 
 # fix prefix
 sed -i -e "s|%{_prefix}/local|%{_prefix}|g" $RPM_BUILD_ROOT%{_bindir}/%{name}_corpus
-sed -i -e "s|%{_prefix}/local|%{_prefix}|g" cgi/dspam.cgi
+sed -i -e "s|%{_prefix}/local|%{_prefix}|g" webui/cgi-bin/dspam.cgi
 
 # fix purge stuff
 #install dspam-cron.weekly $RPM_BUILD_ROOT%{_sysconfdir}/cron.weekly/%{name}
@@ -304,7 +304,7 @@ rm -rf $RPM_BUILD_ROOT
 %files
 %defattr(644,root,root,755)
 %doc README CHANGELOG RELEASE.NOTES UPGRADING
-%doc cgi/base.css cgi/dspam.cgi
+%doc webui/cgi-bin/base.css webui/cgi-bin/dspam.cgi
 %if %{with mysql}
 %doc doc/mysql_drv.txt
 %doc src/tools.mysql_drv/*.sql
