@@ -4,12 +4,12 @@
 # - oracle driver
 #
 # Conditional build:
-%bcond_without	mysql	# enable MySQL storage driver
-%bcond_without	pgsql	# enable PostgreSQL storage driver
-%bcond_without	sqlite	# enable SQLite3 storage driver
-%bcond_without	db
-%bcond_without	daemon
-
+%bcond_without	mysql	# disable MySQL storage driver
+%bcond_without	pgsql	# disable PostgreSQL storage driver
+%bcond_without	sqlite	# disable SQLite3 storage driver
+%bcond_without	db	# disable BerkeleyDB storage driver
+%bcond_without	daemon	# disable daemon mode
+#
 Summary:	A library and Mail Delivery Agent for Bayesian spam filtering
 Summary(pl):	Biblioteka i MDA do bayesowskiego filtrowania spamu
 Name:		dspam
@@ -25,13 +25,13 @@ BuildRequires:	autoconf
 BuildRequires:	automake
 BuildRequires:	libtool
 BuildRequires:	clamav-devel
-BuildRequires:	openldap-devel
 %{?with_db:BuildRequires:	db-devel}
 %{?with_mysql:BuildRequires:	mysql-devel}
+BuildRequires:	openldap-devel
 %{?with_pgsql:BuildRequires:	postgresql-devel}
+BuildRequires:	sed >= 4.0
 %{?with_sqlite:BuildRequires:	sqlite3-devel}
 BuildRequires:	zlib-devel
-BuildRequires:	sed >= 4.0
 Buildroot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %description
@@ -143,6 +143,7 @@ Statyczna biblioteka DSPAM.
 
 %package driver-hash
 Summary:	HASH driver for DSPAM
+Summary(pl);	Sterownik HASH dla DSPAM-a
 Group:		Libraries
 Requires:	%{name}-libs = %{version}-%{release}
 Provides:	%{name}-driver = %{version}-%{release}
@@ -150,8 +151,12 @@ Provides:	%{name}-driver = %{version}-%{release}
 %description driver-hash
 HASH driver for DSPAM.
 
+%description driver-hash -l pl
+Sterownik HASH dla DSPAM-a.
+
 %package driver-db
 Summary:	DB driver for DSPAM
+Summary(pl);	Sterownik DB dla DSPAM-a
 Group:		Libraries
 Requires:	%{name}-libs = %{version}-%{release}
 Provides:	%{name}-driver = %{version}-%{release}
@@ -159,8 +164,12 @@ Provides:	%{name}-driver = %{version}-%{release}
 %description driver-db
 DB driver for DSPAM.
 
+%description driver-db -l pl
+Sterownik DB dla DSPAM-a.
+
 %package driver-mysql
 Summary:	MySQL driver for DSPAM
+Summary(pl);	Sterownik MySQL dla DSPAM-a
 Group:		Libraries
 Requires:	%{name}-libs = %{version}-%{release}
 Provides:	%{name}-driver = %{version}-%{release}
@@ -168,8 +177,12 @@ Provides:	%{name}-driver = %{version}-%{release}
 %description driver-mysql
 MySQL driver for DSPAM.
 
+%description driver-mysql -l pl
+Sterownik MySQL dla DSPAM-a.
+
 %package driver-pgsql
 Summary:	PostgreSQL driver for DSPAM
+Summary(pl);	Sterownik PostgreSQL dla DSPAM-a
 Group:		Libraries
 Requires:	%{name}-libs = %{version}-%{release}
 Provides:	%{name}-driver = %{version}-%{release}
@@ -177,14 +190,21 @@ Provides:	%{name}-driver = %{version}-%{release}
 %description driver-pgsql
 PostgreSQL driver for DSPAM.
 
+%description driver-pgsql -l pl
+Sterownik PostgreSQL dla DSPAM-a.
+
 %package driver-sqlite
 Summary:	SQLite driver for DSPAM
+Summary(pl);	Sterownik SQLite dla DSPAM-a
 Group:		Libraries
 Requires:	%{name}-libs = %{version}-%{release}
 Provides:	%{name}-driver = %{version}-%{release}
 
 %description driver-sqlite
 SQLite driver for DSPAM.
+
+%description driver-sqlite -l pl
+Sterownik SQLite dla DSPAM-a.
 
 %prep
 %setup -q
