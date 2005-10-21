@@ -1,51 +1,20 @@
-# NOTE about versioning:
-#  Stable Releases: 3.4.x, Development Releases: 3.5.x
-#  All odd-versioned minor releases are considered development
-#  releases, and all even-versioned minor releases are stable releases
-# - from http://www.nuclearelephant.com/projects/dspam/download.shtml
 #
 # TODO:
-# - everything
+# - support for libdclassify
 # - oracle driver
-# - missing /etc/dspam.conf for cron:
-#   /etc/cron.daily/dspam:
-#    2430: [6/28/2005 1:2:1] Unable to open file for reading: /etc/dspam.conf: No such file or directory
-#    2430: [6/28/2005 1:2:1] Unable to read dspam.conf
 #
 # Conditional build:
-%bcond_without	mysql	# enable MySQL storage driver (disable sqlite/pgsql driver)
-%bcond_with	pgsql	# enable PostgreSQL storage driver (disable sqlite/mysql driver)
-%bcond_with	sqlite	# enable SQLite3 storage driver
-%bcond_with	daemon
-
-%if %{with mysql} && %{with pgsql}
-%undefine with_mysql
-%{warn:disabled mysql as mysql and pgsql aren't supported together (yet)
-}#'vim
-%endif
-
-%if %{with mysql} && %{with sqlite}
-%undefine with_mysql
-%{warn:disabled mysql as mysql and sqlite aren't supported together (yet)
-}#'vim
-%endif
-
-%if %{with pgsql} && %{with sqlite}
-%undefine with_sqlite
-%{warn:disabled sqlite as pgsql and sqlite aren't supported together (yet)
-}#'vim
-%endif
-
-
-%if %{with mysql} || %{with pgsql}
-%define	with_daemon 1
-%endif
+%bcond_without	mysql	# enable MySQL storage driver
+%bcond_without	pgsql	# enable PostgreSQL storage driver
+%bcond_without	sqlite	# enable SQLite3 storage driver
+%bcond_without	db
+%bcond_without	daemon
 
 Summary:	A library and Mail Delivery Agent for Bayesian spam filtering
 Summary(pl):	Biblioteka i MDA do bayesowskiego filtrowania spamu
 Name:		dspam
 Version:	3.6.0
-Release:	0.2
+Release:	0.3
 License:	GPL
 Group:		Applications/Mail
 Source0:	http://www.nuclearelephant.com/projects/dspam/sources/%{name}-%{version}.tar.gz
@@ -55,9 +24,13 @@ URL:		http://www.nuclearelephant.com/projects/dspam/
 BuildRequires:	autoconf
 BuildRequires:	automake
 BuildRequires:	libtool
+BuildRequires:	clamav-devel
+BuildRequires:	openldap-devel
+%{?with_db:BuildRequires:	db-devel}
 %{?with_mysql:BuildRequires:	mysql-devel}
 %{?with_pgsql:BuildRequires:	postgresql-devel}
 %{?with_sqlite:BuildRequires:	sqlite3-devel}
+BuildRequires:	zlib-devel
 BuildRequires:	sed >= 4.0
 Buildroot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
@@ -117,6 +90,7 @@ Klient dspam.
 Summary:	A library for Bayesian spam filtering
 Summary(pl):	Biblioteka do bayesowskiego filtrowania spamu
 Group:		Libraries
+Requires:	%{name}-driver = %{version}-%{release}
 
 %description libs
 DSPAM (as in De-Spam) is an open-source project to create a new kind
@@ -167,6 +141,51 @@ Static DSPAM library.
 %description static -l pl
 Statyczna biblioteka DSPAM.
 
+%package driver-hash
+Summary:	HASH driver for DSPAM
+Group:		Libraries
+Requires:	%{name}-libs = %{version}-%{release}
+Provides:	%{name}-driver = %{version}-%{release}
+
+%description driver-hash
+HASH driver for DSPAM.
+
+%package driver-db
+Summary:	DB driver for DSPAM
+Group:		Libraries
+Requires:	%{name}-libs = %{version}-%{release}
+Provides:	%{name}-driver = %{version}-%{release}
+
+%description driver-db
+DB driver for DSPAM.
+
+%package driver-mysql
+Summary:	MySQL driver for DSPAM
+Group:		Libraries
+Requires:	%{name}-libs = %{version}-%{release}
+Provides:	%{name}-driver = %{version}-%{release}
+
+%description driver-mysql
+MySQL driver for DSPAM.
+
+%package driver-pgsql
+Summary:	PostgreSQL driver for DSPAM
+Group:		Libraries
+Requires:	%{name}-libs = %{version}-%{release}
+Provides:	%{name}-driver = %{version}-%{release}
+
+%description driver-pgsql
+PostgreSQL driver for DSPAM.
+
+%package driver-sqlite
+Summary:	SQLite driver for DSPAM
+Group:		Libraries
+Requires:	%{name}-libs = %{version}-%{release}
+Provides:	%{name}-driver = %{version}-%{release}
+
+%description driver-sqlite
+SQLite driver for DSPAM.
+
 %prep
 %setup -q
 sed -i -e 's#\-static##g' src/Makefile* src/*/Makefile*
@@ -189,27 +208,29 @@ sed -i -e 's#\-static##g' src/Makefile* src/*/Makefile*
 	--with-dspam-group=none \
 	--with-signature-life=14 \
 	--disable-dependency-tracking \
-%if %{with mysql}
+	--enable-ldap \
+	--enable-clamav \
+	--enable-preferences-extension \
+	--enable-long-usernames \
 	--enable-neural-networking \
-	--enable-daemon \
-	--enable-virtual-users \
-	--with-storage-driver=mysql_drv \
+        --enable-virtual-users \
+        --with-storage-driver=hash_drv%{?with_db:,libdb4_drv}%{?with_mysql:,mysql_drv}%{?with_pgsql:,pgsql_drv}%{?with_sqlite:,sqlite_drv} \
+%if %{with mysql}
 	--with-mysql-includes=%{_includedir}/mysql \
-	--with-mysql-libraries=%{_libdir}
+	--with-mysql-libraries=%{_libdir} \
 %endif
 %if %{with pgsql}
-	--enable-neural-networking \
-	--enable-daemon \
-	--enable-virtual-users \
-	--with-storage-driver=pgsql_drv \
 	--with-pgsql-includes=%{_includedir}/postgresql \
-	--with-pgsql-libraries=%{_libdir}
+	--with-pgsql-libraries=%{_libdir} \
 %endif
 %if %{with sqlite}
-	--with-storage-driver=sqlite3_drv \
 	--with-sqlite3-includes=%{_includedir} \
-	--with-sqlite3-libraries=%{_libdir}
+	--with-sqlite3-libraries=%{_libdir} \
 %endif
+	--enable-daemon
+
+# --enable-dclassify-extension needs libdclassify
+
 %{__make}
 
 %install
@@ -304,22 +325,10 @@ rm -rf $RPM_BUILD_ROOT
 %files
 %defattr(644,root,root,755)
 %doc README CHANGELOG RELEASE.NOTES UPGRADING
-%doc webui/cgi-bin/base.css webui/cgi-bin/dspam.cgi
-%if %{with mysql}
-%doc doc/mysql_drv.txt
-%doc src/tools.mysql_drv/*.sql
-%endif
-%if %{with pgsql}
-%doc doc/pgsql_drv.txt
-%doc src/tools.pgsql_drv/*.sql
-%endif
-%if %{without mysql} && %{without pgsql}
-%doc doc/sqlite_drv.txt
-%endif
+%doc webui/*/*.{cgi,prefs,txt} webui/*/*.txt webui/*/templates/*.html
+%doc doc/{courier,exim,markov,pop3filter,postfix,qmail,relay,sendmail}.txt
 %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/dspam.conf
 %dir %attr(750,root,mail) /var/lib/%{name}
-%{?with_mysql:%attr(640,root,mail) %config(noreplace) /var/lib/%{name}/mysql.data}
-%{?with_pgsql:%attr(640,root,mail) %config(noreplace) /var/lib/%{name}/pgsql.data}
 %attr(755,root,root) %config(noreplace) /etc/cron.daily/%{name}
 %attr(755,root,mail) %{_bindir}/%{name}
 %attr(755,root,mail) %{_bindir}/%{name}_logrotate
@@ -332,7 +341,6 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_bindir}/%{name}_merge
 %attr(755,root,root) %{_bindir}/%{name}_2sql
 %attr(755,root,root) %{_bindir}/%{name}_admin
-%{?with_pgsql:%attr(755,root,root) %{_bindir}/%{name}_pg2int8}
 %{_mandir}/man?/%{name}*
 
 %if %{with daemon}
@@ -347,10 +355,12 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(644,root,root,755)
 %doc README CHANGELOG
 %attr(755,root,root) %{_libdir}/lib*.so.*.*.*
+%attr(755,root,root) %exclude %{_libdir}/lib*_drv*.so*
 
 %files devel
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/lib*.so
+%attr(755,root,root) %exclude %{_libdir}/lib*_drv*.so*
 %{_libdir}/lib*.la
 %{_includedir}/%{name}
 %{_mandir}/man3/libdspam*
@@ -359,3 +369,38 @@ rm -rf $RPM_BUILD_ROOT
 %files static
 %defattr(644,root,root,755)
 %{_libdir}/lib*.a
+
+%files driver-hash
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_bindir}/css*
+%attr(755,root,root) %{_libdir}/libhash_drv*.so*
+
+%if %{with db}
+%files driver-db
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_libdir}/libdb4_drv*.so*
+%endif
+
+%if %{with mysql}
+%files driver-mysql
+%defattr(644,root,root,755)
+%doc doc/mysql_drv.txt src/tools.mysql_drv/*.sql
+%attr(640,root,mail) %config(noreplace) /var/lib/%{name}/mysql.data
+%attr(755,root,root) %{_libdir}/libmysql_drv*.so*
+%endif
+
+%if %{with pgsql}
+%files driver-pgsql
+%defattr(644,root,root,755)
+%doc doc/pgsql_drv.txt src/tools.pgsql_drv/*.sql
+%attr(640,root,mail) %config(noreplace) /var/lib/%{name}/pgsql.data
+%attr(755,root,root) %{_bindir}/%{name}_pg2int8
+%attr(755,root,root) %{_libdir}/libpgsql_drv*.so*
+%endif
+
+%if %{with sqlite}
+%files driver-sqlite
+%defattr(644,root,root,755)
+%doc doc/sqlite_drv.txt
+%attr(755,root,root) %{_libdir}/libsqlite_drv*.so*
+%endif
