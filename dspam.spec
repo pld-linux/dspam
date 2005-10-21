@@ -143,7 +143,7 @@ Statyczna biblioteka DSPAM.
 
 %package driver-hash
 Summary:	HASH driver for DSPAM
-Summary(pl);	Sterownik HASH dla DSPAM-a
+Summary(pl):	Sterownik HASH dla DSPAM-a
 Group:		Libraries
 Requires:	%{name}-libs = %{version}-%{release}
 Provides:	%{name}-driver = %{version}-%{release}
@@ -156,7 +156,7 @@ Sterownik HASH dla DSPAM-a.
 
 %package driver-db
 Summary:	DB driver for DSPAM
-Summary(pl);	Sterownik DB dla DSPAM-a
+Summary(pl):	Sterownik DB dla DSPAM-a
 Group:		Libraries
 Requires:	%{name}-libs = %{version}-%{release}
 Provides:	%{name}-driver = %{version}-%{release}
@@ -169,7 +169,7 @@ Sterownik DB dla DSPAM-a.
 
 %package driver-mysql
 Summary:	MySQL driver for DSPAM
-Summary(pl);	Sterownik MySQL dla DSPAM-a
+Summary(pl):	Sterownik MySQL dla DSPAM-a
 Group:		Libraries
 Requires:	%{name}-libs = %{version}-%{release}
 Provides:	%{name}-driver = %{version}-%{release}
@@ -182,7 +182,7 @@ Sterownik MySQL dla DSPAM-a.
 
 %package driver-pgsql
 Summary:	PostgreSQL driver for DSPAM
-Summary(pl);	Sterownik PostgreSQL dla DSPAM-a
+Summary(pl):	Sterownik PostgreSQL dla DSPAM-a
 Group:		Libraries
 Requires:	%{name}-libs = %{version}-%{release}
 Provides:	%{name}-driver = %{version}-%{release}
@@ -195,7 +195,7 @@ Sterownik PostgreSQL dla DSPAM-a.
 
 %package driver-sqlite
 Summary:	SQLite driver for DSPAM
-Summary(pl);	Sterownik SQLite dla DSPAM-a
+Summary(pl):	Sterownik SQLite dla DSPAM-a
 Group:		Libraries
 Requires:	%{name}-libs = %{version}-%{release}
 Provides:	%{name}-driver = %{version}-%{release}
