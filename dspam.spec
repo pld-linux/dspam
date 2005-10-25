@@ -2,6 +2,9 @@
 # TODO:
 # - support for libdclassify
 # - oracle driver
+# - messages from default install of cron with mysql driver
+# 3197: [10/25/2005 05:02:01] dlopen() failed: /usr/lib/libhash_drv.so: /usr/lib/libhash_drv.so: cannot open shared object file: No such file or directory
+# Memory fault
 #
 # Conditional build:
 %bcond_without	mysql	# disable MySQL storage driver
