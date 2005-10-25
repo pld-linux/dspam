@@ -3,7 +3,6 @@
 # - support for libdclassify
 # - oracle driver
 # - messages from default install of cron with mysql driver
-# 3197: [10/25/2005 05:02:01] dlopen() failed: /usr/lib/libhash_drv.so: /usr/lib/libhash_drv.so: cannot open shared object file: No such file or directory
 # Memory fault
 #
 # Conditional build:
@@ -17,7 +16,7 @@ Summary:	A library and Mail Delivery Agent for Bayesian spam filtering
 Summary(pl):	Biblioteka i MDA do bayesowskiego filtrowania spamu
 Name:		dspam
 Version:	3.6.0
-Release:	0.3
+Release:	0.5
 License:	GPL
 Group:		Applications/Mail
 Source0:	http://www.nuclearelephant.com/projects/dspam/sources/%{name}-%{version}.tar.gz
@@ -149,6 +148,7 @@ Summary:	HASH driver for DSPAM
 Summary(pl):	Sterownik HASH dla DSPAM-a
 Group:		Libraries
 Requires:	%{name}-libs = %{version}-%{release}
+Requires(post):	sed >= 4.0
 Provides:	%{name}-driver = %{version}-%{release}
 
 %description driver-hash
@@ -162,6 +162,7 @@ Summary:	DB driver for DSPAM
 Summary(pl):	Sterownik DB dla DSPAM-a
 Group:		Libraries
 Requires:	%{name}-libs = %{version}-%{release}
+Requires(post):	sed >= 4.0
 Provides:	%{name}-driver = %{version}-%{release}
 
 %description driver-db
@@ -175,6 +176,7 @@ Summary:	MySQL driver for DSPAM
 Summary(pl):	Sterownik MySQL dla DSPAM-a
 Group:		Libraries
 Requires:	%{name}-libs = %{version}-%{release}
+Requires(post):	sed >= 4.0
 Provides:	%{name}-driver = %{version}-%{release}
 
 %description driver-mysql
@@ -188,6 +190,7 @@ Summary:	PostgreSQL driver for DSPAM
 Summary(pl):	Sterownik PostgreSQL dla DSPAM-a
 Group:		Libraries
 Requires:	%{name}-libs = %{version}-%{release}
+Requires(post):	sed >= 4.0
 Provides:	%{name}-driver = %{version}-%{release}
 
 %description driver-pgsql
@@ -201,6 +204,7 @@ Summary:	SQLite driver for DSPAM
 Summary(pl):	Sterownik SQLite dla DSPAM-a
 Group:		Libraries
 Requires:	%{name}-libs = %{version}-%{release}
+Requires(post):	sed >= 4.0
 Provides:	%{name}-driver = %{version}-%{release}
 
 %description driver-sqlite
@@ -218,15 +222,25 @@ sed -i -e 's#\-static##g' src/Makefile* src/*/Makefile*
 %{__aclocal} -I m4
 %{__autoconf}
 %{__automake}
+
+DRIVERS="
+hash_drv
+%{?with_db:libdb4_drv}
+%{?with_mysql:mysql_drv}
+%{?with_pgsql:pgsql_drv}
+%{?with_sqlite:sqlite_drv}
+"
 %configure \
 	%{?debug: --enable-debug --enable-bnr-debug --enable-verbose-debug} \
 	--enable-trusted-user-security \
 	--enable-bias \
 	--enable-large-scale \
 	--with-userdir=/var/lib/%{name} \
-	--with-dspam-home=/var/lib/%{name} \
 	--with-userdir-owner=none \
 	--with-userdir-group=none \
+	--with-dspam-home=/var/lib/%{name} \
+	--with-dspam-home-owner=none \
+	--with-dspam-home-group=none \
 	--with-dspam-owner=none \
 	--with-dspam-group=none \
 	--with-signature-life=14 \
@@ -236,8 +250,8 @@ sed -i -e 's#\-static##g' src/Makefile* src/*/Makefile*
 	--enable-preferences-extension \
 	--enable-long-usernames \
 	--enable-neural-networking \
-        --enable-virtual-users \
-        --with-storage-driver=hash_drv%{?with_db:,libdb4_drv}%{?with_mysql:,mysql_drv}%{?with_pgsql:,pgsql_drv}%{?with_sqlite:,sqlite_drv} \
+	--enable-virtual-users \
+	--with-storage-driver=$(echo $DRIVERS | tr ' ' ',') \
 %if %{with mysql}
 	--with-mysql-includes=%{_includedir}/mysql \
 	--with-mysql-libraries=%{_libdir} \
@@ -344,6 +358,31 @@ rm -rf $RPM_BUILD_ROOT
 
 %post	libs -p /sbin/ldconfig
 %postun	libs -p /sbin/ldconfig
+
+%post driver-db
+if [ "$1" = "1" ]; then
+	sed -i -e '/^StorageDriver/s,/.*.so,%{_libdir}/libdb4_drv.so,' /etc/dspam.conf
+fi
+
+%post driver-hash
+if [ "$1" = "1" ]; then
+	sed -i -e '/^StorageDriver/s,/.*\.so,%{_libdir}/libhash_drv.so,' /etc/dspam.conf
+fi
+
+%post driver-mysql
+if [ "$1" = "1" ]; then
+	sed -i -e '/^StorageDriver/s,/.*\.so,%{_libdir}/libmysql_drv.so,' /etc/dspam.conf
+fi
+
+%post driver-pgsql
+if [ "$1" = "1" ]; then
+	sed -i -e '/^StorageDriver/s,/.*\.so,%{_libdir}/libpgsql_drv.so,' /etc/dspam.conf
+fi
+
+%post driver-sqlite
+if [ "$1" = "1" ]; then
+	sed -i -e '/^StorageDriver/s,/.*\.so,%{_libdir}/libsqlite_drv.so,' /etc/dspam.conf
+fi
 
 %files
 %defattr(644,root,root,755)
