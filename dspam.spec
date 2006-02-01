@@ -16,12 +16,13 @@ Summary:	A library and Mail Delivery Agent for Bayesian spam filtering
 Summary(pl):	Biblioteka i MDA do bayesowskiego filtrowania spamu
 Name:		dspam
 Version:	3.6.3
-Release:	0.1
+Release:	0.2
 License:	GPL
 Group:		Applications/Mail
 Source0:	http://www.nuclearelephant.com/projects/dspam/sources/%{name}-%{version}.tar.gz
 # Source0-md5:	db1aedb9677e6bf5c7a47a72d4f130e5
 Source1:	%{name}.init
+Patch0:		%{name}-mysql-runtime.patch
 URL:		http://www.nuclearelephant.com/projects/dspam/
 BuildRequires:	autoconf
 BuildRequires:	automake
@@ -215,6 +216,7 @@ Sterownik SQLite dla DSPAM-a.
 
 %prep
 %setup -q
+%patch0 -p1
 sed -i -e 's#\-static##g' src/Makefile* src/*/Makefile*
 
 %build
