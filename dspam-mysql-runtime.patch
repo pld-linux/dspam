@@ -1,6 +1,6 @@
 diff -urN dspam-3.6.3.org/src/mysql_drv.c dspam-3.6.3/src/mysql_drv.c
 --- dspam-3.6.3.org/src/mysql_drv.c	2006-01-18 17:48:53.000000000 +0100
-+++ dspam-3.6.3/src/mysql_drv.c	2006-02-01 21:23:06.000000000 +0100
++++ dspam-3.6.3/src/mysql_drv.c	2006-02-01 21:41:20.000000000 +0100
 @@ -67,6 +67,8 @@
  #include "config_shared.h"
  #endif
@@ -71,25 +71,26 @@ diff -urN dspam-3.6.3.org/src/mysql_drv.c dspam-3.6.3/src/mysql_drv.c
        snprintf (ins, sizeof (ins),
                  "%s(%d, '%llu', %d, %d, current_date())",
                   (insert_any) ? ", " : "",
-@@ -689,6 +706,7 @@
+@@ -689,7 +706,8 @@
  
        insert_any = 1;
        buffer_cat(insert, ins);
+-#else
 +      } else {
- #else
++#endif
        snprintf(ins, sizeof (ins),
                 "insert into dspam_token_data(uid, token, spam_hits, "
-@@ -702,6 +720,9 @@
+                "innocent_hits, last_hit) values(%d, '%llu', %d, %d, "
+@@ -701,6 +719,8 @@
+ 
        if (MYSQL_RUN_QUERY (s->dbh, ins))
          stat.status |= TST_DISK;
- #endif
 +#if MYSQL_VERSION_ID >= 40100
 +      }
-+#endif
+ #endif
      }
  
-     if (stat.status & TST_DISK) {
-@@ -749,6 +770,7 @@
+@@ -749,6 +769,7 @@
    }
  
  #if MYSQL_VERSION_ID >= 40100
@@ -97,7 +98,7 @@ diff -urN dspam-3.6.3.org/src/mysql_drv.c dspam-3.6.3/src/mysql_drv.c
    if (insert_any)
    {
       snprintf (scratch, sizeof (scratch),
-@@ -770,6 +792,7 @@
+@@ -770,6 +791,7 @@
    }
  
    buffer_destroy(insert);
