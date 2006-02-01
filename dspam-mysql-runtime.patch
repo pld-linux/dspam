@@ -24,7 +24,7 @@ diff -urN dspam-3.6.3.org/src/mysql_drv.c dspam-3.6.3/src/mysql_drv.c
 +    return 0;
 +    
 +#if defined(MYSQL4_INITIALIZATION) && MYSQL_VERSION_ID >= 40001
-+  if (_ds_match_attribute(DTX->CTX->config->attributes, "MySQLVersion3", "on"))
++  if (_ds_match_attribute(DTX->CTX->config->attributes, "MySQLVersion40", "on"))
 +    use_mysql40 = 1;
  
 +  if (!use_mysql40)  
