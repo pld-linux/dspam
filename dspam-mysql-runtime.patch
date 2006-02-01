@@ -1,6 +1,6 @@
 diff -urN dspam-3.6.3.org/src/mysql_drv.c dspam-3.6.3/src/mysql_drv.c
 --- dspam-3.6.3.org/src/mysql_drv.c	2006-01-18 17:48:53.000000000 +0100
-+++ dspam-3.6.3/src/mysql_drv.c	2006-02-01 21:41:20.000000000 +0100
++++ dspam-3.6.3/src/mysql_drv.c	2006-02-01 21:46:52.000000000 +0100
 @@ -67,6 +67,8 @@
  #include "config_shared.h"
  #endif
@@ -106,3 +106,13 @@ diff -urN dspam-3.6.3.org/src/mysql_drv.c dspam-3.6.3/src/mysql_drv.c
  #endif
  
    buffer_destroy (query);
+@@ -2701,6 +2723,9 @@
+   char db[64] = { 0 };
+   int port = 3306, i = 0, real_connect_flag = 0;
+ 
++  if (_ds_match_attribute(CTX->config->attributes, "MySQLVersion40", "on"))
++	  use_mysql40 = 1;
++
+   /* Read storage attributes */
+   if (_ds_read_attribute(CTX->config->attributes, "MySQLServer")) {
+     char *p;
