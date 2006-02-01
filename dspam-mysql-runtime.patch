@@ -1,0 +1,77 @@
+diff -urN dspam-3.6.3.org/src/mysql_drv.c dspam-3.6.3/src/mysql_drv.c
+--- dspam-3.6.3.org/src/mysql_drv.c	2006-01-18 17:48:53.000000000 +0100
++++ dspam-3.6.3/src/mysql_drv.c	2006-02-01 21:09:20.000000000 +0100
+@@ -84,6 +84,7 @@
+   const char *server_default_groups[]=
+   { "server", "embedded", "mysql_SERVER", 0 };
+ 
++  if (_ds_match_attribute(DTX->CTX->config->attributes, "MySQLVersion4", "on"))
+   if (mysql_server_init(0, NULL, (char**) server_default_groups)) {
+     LOGDEBUG("dspam_init_driver() failed");
+     return EFAILURE;
+@@ -148,6 +149,7 @@
+   }
+ 
+ #if defined(MYSQL4_INITIALIZATION) && MYSQL_VERSION_ID >= 40001
++  if (_ds_match_attribute(DTX->CTX->config->attributes, "MySQLVersion4", "on"))
+   mysql_server_end();
+ #endif
+   return 0;
+@@ -610,6 +612,7 @@
+   }
+ 
+ #if MYSQL_VERSION_ID >= 40100
++  if (_ds_match_attribute(CTX->config->attributes, "MySQLVersion4", "on")) {
+   insert = buffer_create(NULL);
+   if (insert == NULL)
+   {
+@@ -617,6 +620,7 @@
+     LOG (LOG_CRIT, ERR_MEM_ALLOC);
+     return EUNKNOWN;
+   }
++  }
+ #endif
+ 
+   ds_diction_getstat(diction, s->control_token, &control);
+@@ -633,6 +637,7 @@
+   buffer_cat (query, scratch);
+ 
+ #if MYSQL_VERSION_ID >= 40100
++  if (_ds_match_attribute(CTX->config->attributes, "MySQLVersion4", "on"))
+   buffer_copy (insert, "insert into dspam_token_data(uid, token, spam_hits, "
+                        "innocent_hits, last_hit) values");
+ #endif
+@@ -679,6 +684,7 @@
+     {
+       char ins[1024];
+ #if MYSQL_VERSION_ID >= 40100
++      if (_ds_match_attribute(CTX->config->attributes, "MySQLVersion4", "on")) {
+       snprintf (ins, sizeof (ins),
+                 "%s(%d, '%llu', %d, %d, current_date())",
+                  (insert_any) ? ", " : "",
+@@ -689,6 +695,7 @@
+ 
+       insert_any = 1;
+       buffer_cat(insert, ins);
++      } else {
+ #else
+       snprintf(ins, sizeof (ins),
+                "insert into dspam_token_data(uid, token, spam_hits, "
+@@ -702,6 +709,9 @@
+       if (MYSQL_RUN_QUERY (s->dbh, ins))
+         stat.status |= TST_DISK;
+ #endif
++#if MYSQL_VERSION_ID >= 40100
++      }
++#endif
+     }
+ 
+     if (stat.status & TST_DISK) {
+@@ -749,6 +759,7 @@
+   }
+ 
+ #if MYSQL_VERSION_ID >= 40100
++  if (_ds_match_attribute(CTX->config->attributes, "MySQLVersion4", "on"))
+   if (insert_any)
+   {
+      snprintf (scratch, sizeof (scratch),
