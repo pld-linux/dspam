@@ -20,7 +20,7 @@ case "$1" in
 	# Check if the service is already running?
 	if [ ! -f /var/lock/subsys/dspam ]; then
 		msg_starting dspam
-		daemon --fork /usr/bin/dspam --daemon
+		daemon --fork --user mail /usr/bin/dspam --daemon
 		RETVAL=$?
 		[ $RETVAL -eq 0 ] && touch /var/lock/subsys/dspam
 	else
