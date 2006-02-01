@@ -1,31 +1,53 @@
 diff -urN dspam-3.6.3.org/src/mysql_drv.c dspam-3.6.3/src/mysql_drv.c
 --- dspam-3.6.3.org/src/mysql_drv.c	2006-01-18 17:48:53.000000000 +0100
-+++ dspam-3.6.3/src/mysql_drv.c	2006-02-01 21:09:20.000000000 +0100
-@@ -84,6 +84,7 @@
++++ dspam-3.6.3/src/mysql_drv.c	2006-02-01 21:23:06.000000000 +0100
+@@ -67,6 +67,8 @@
+ #include "config_shared.h"
+ #endif
+ 
++static int use_mysql40 = 0;
++
+ int test(MYSQL *, char *);
+ 
+ int test(MYSQL *dbh, char *query) {
+@@ -80,10 +82,20 @@
+ int
+ dspam_init_driver (DRIVER_CTX *DTX) 
+ {
++
+ #if defined(MYSQL4_INITIALIZATION) && MYSQL_VERSION_ID >= 40001
    const char *server_default_groups[]=
    { "server", "embedded", "mysql_SERVER", 0 };
++#endif
++  
++  if (DTX == NULL)
++    return 0;
++    
++#if defined(MYSQL4_INITIALIZATION) && MYSQL_VERSION_ID >= 40001
++  if (_ds_match_attribute(DTX->CTX->config->attributes, "MySQLVersion3", "on"))
++    use_mysql40 = 1;
  
-+  if (_ds_match_attribute(DTX->CTX->config->attributes, "MySQLVersion4", "on"))
++  if (!use_mysql40)  
    if (mysql_server_init(0, NULL, (char**) server_default_groups)) {
      LOGDEBUG("dspam_init_driver() failed");
      return EFAILURE;
-@@ -148,6 +149,7 @@
+@@ -148,6 +160,7 @@
    }
  
  #if defined(MYSQL4_INITIALIZATION) && MYSQL_VERSION_ID >= 40001
-+  if (_ds_match_attribute(DTX->CTX->config->attributes, "MySQLVersion4", "on"))
++  if (!use_mysql40)
    mysql_server_end();
  #endif
    return 0;
-@@ -610,6 +612,7 @@
+@@ -610,6 +623,7 @@
    }
  
  #if MYSQL_VERSION_ID >= 40100
-+  if (_ds_match_attribute(CTX->config->attributes, "MySQLVersion4", "on")) {
++  if (!use_mysql40) {
    insert = buffer_create(NULL);
    if (insert == NULL)
    {
-@@ -617,6 +620,7 @@
+@@ -617,6 +631,7 @@
      LOG (LOG_CRIT, ERR_MEM_ALLOC);
      return EUNKNOWN;
    }
@@ -33,23 +55,23 @@ diff -urN dspam-3.6.3.org/src/mysql_drv.c dspam-3.6.3/src/mysql_drv.c
  #endif
  
    ds_diction_getstat(diction, s->control_token, &control);
-@@ -633,6 +637,7 @@
+@@ -633,6 +648,7 @@
    buffer_cat (query, scratch);
  
  #if MYSQL_VERSION_ID >= 40100
-+  if (_ds_match_attribute(CTX->config->attributes, "MySQLVersion4", "on"))
++  if (!use_mysql40)
    buffer_copy (insert, "insert into dspam_token_data(uid, token, spam_hits, "
                         "innocent_hits, last_hit) values");
  #endif
-@@ -679,6 +684,7 @@
+@@ -679,6 +695,7 @@
      {
        char ins[1024];
  #if MYSQL_VERSION_ID >= 40100
-+      if (_ds_match_attribute(CTX->config->attributes, "MySQLVersion4", "on")) {
++      if (!use_mysql40) {
        snprintf (ins, sizeof (ins),
                  "%s(%d, '%llu', %d, %d, current_date())",
                   (insert_any) ? ", " : "",
-@@ -689,6 +695,7 @@
+@@ -689,6 +706,7 @@
  
        insert_any = 1;
        buffer_cat(insert, ins);
@@ -57,7 +79,7 @@ diff -urN dspam-3.6.3.org/src/mysql_drv.c dspam-3.6.3/src/mysql_drv.c
  #else
        snprintf(ins, sizeof (ins),
                 "insert into dspam_token_data(uid, token, spam_hits, "
-@@ -702,6 +709,9 @@
+@@ -702,6 +720,9 @@
        if (MYSQL_RUN_QUERY (s->dbh, ins))
          stat.status |= TST_DISK;
  #endif
@@ -67,11 +89,19 @@ diff -urN dspam-3.6.3.org/src/mysql_drv.c dspam-3.6.3/src/mysql_drv.c
      }
  
      if (stat.status & TST_DISK) {
-@@ -749,6 +759,7 @@
+@@ -749,6 +770,7 @@
    }
  
  #if MYSQL_VERSION_ID >= 40100
-+  if (_ds_match_attribute(CTX->config->attributes, "MySQLVersion4", "on"))
++  if (!use_mysql40) {
    if (insert_any)
    {
       snprintf (scratch, sizeof (scratch),
+@@ -770,6 +792,7 @@
+   }
+ 
+   buffer_destroy(insert);
++  }
+ #endif
+ 
+   buffer_destroy (query);
