@@ -17,7 +17,7 @@ Summary:	A library and Mail Delivery Agent for Bayesian spam filtering
 Summary(pl):	Biblioteka i MDA do bayesowskiego filtrowania spamu
 Name:		dspam
 Version:	3.6.3
-Release:	0.4
+Release:	0.4.1
 License:	GPL
 Group:		Applications/Mail
 Source0:	http://www.nuclearelephant.com/projects/dspam/sources/%{name}-%{version}.tar.gz
@@ -278,7 +278,7 @@ rm -rf $RPM_BUILD_ROOT
 %{__make} install \
 	DESTDIR=$RPM_BUILD_ROOT
 
-install -d $RPM_BUILD_ROOT/etc/{rc.d/init.d,sysconfig}
+install -d $RPM_BUILD_ROOT/{var/run/dspam,/etc/{rc.d/init.d,sysconfig}}
 install %{SOURCE1} $RPM_BUILD_ROOT/etc/rc.d/init.d/dspam
 
 # install devel files
@@ -394,8 +394,8 @@ fi
 %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/dspam.conf
 %dir %attr(750,root,mail) /var/lib/%{name}
 %attr(755,root,root) %config(noreplace) /etc/cron.daily/%{name}
-%attr(755,root,mail) %{_bindir}/%{name}
-%attr(755,root,mail) %{_bindir}/%{name}_logrotate
+%attr(755,root,root) %{_bindir}/%{name}
+%attr(755,root,root) %{_bindir}/%{name}_logrotate
 %attr(755,root,root) %{_bindir}/%{name}_clean
 %attr(755,root,root) %{_bindir}/%{name}_corpus
 %attr(755,root,root) %{_bindir}/%{name}_crc
@@ -412,8 +412,9 @@ fi
 %files client
 %defattr(644,root,root,755)
 %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/dspam.conf
+%attr(770,root,mail) /var/run/dspam
 %endif
-%attr(755,root,mail) %{_bindir}/%{name}c
+%attr(755,root,root) %{_bindir}/%{name}c
 
 %files libs
 %defattr(644,root,root,755)
