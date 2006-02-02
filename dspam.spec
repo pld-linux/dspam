@@ -281,8 +281,11 @@ rm -rf $RPM_BUILD_ROOT
 install -d $RPM_BUILD_ROOT/{var/run/dspam,/etc/{rc.d/init.d,sysconfig}}
 install %{SOURCE1} $RPM_BUILD_ROOT/etc/rc.d/init.d/dspam
 
+#
+ln -s /var/log/dspam $RPM_BUILD_ROOT/var/lib/%{name}/log
+
 # install devel files
-install -d $RPM_BUILD_ROOT{%{_includedir}/%{name},/var/lib/%{name}}
+install -d $RPM_BUILD_ROOT{%{_includedir}/%{name},/var/{log,lib}/%{name}}
 install src/*.h $RPM_BUILD_ROOT%{_includedir}/%{name}
 
 # provide maintenance scripts
@@ -393,6 +396,7 @@ fi
 %doc doc/{courier,exim,markov,pop3filter,postfix,qmail,relay,sendmail}.txt
 %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/dspam.conf
 %dir %attr(750,root,mail) /var/lib/%{name}
+%dir %attr(770,root,mail) /var/log/dspam
 %attr(755,root,root) %config(noreplace) /etc/cron.daily/%{name}
 %attr(755,root,root) %{_bindir}/%{name}
 %attr(755,root,root) %{_bindir}/%{name}_logrotate
