@@ -26,15 +26,17 @@ Source1:	%{name}.init
 URL:		http://www.nuclearelephant.com/projects/dspam/
 BuildRequires:	autoconf
 BuildRequires:	automake
-BuildRequires:	libtool
 BuildRequires:	clamav-devel
 %{?with_db:BuildRequires:	db-devel}
+BuildRequires:	libtool
 %{?with_mysql:BuildRequires:	mysql-devel}
 BuildRequires:	openldap-devel
 %{?with_pgsql:BuildRequires:	postgresql-devel}
 BuildRequires:	sed >= 4.0
 %{?with_sqlite:BuildRequires:	sqlite3-devel}
 BuildRequires:	zlib-devel
+Requires(post,preun):	/sbin/chkconfig
+Requires:	rc-scripts
 Buildroot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %description
@@ -80,8 +82,8 @@ Summary:	dspam client
 Summary(pl):	Klient dspam
 Group:		Applications/Mail
 # to get the same dspam.conf when both installed
-Conflicts:	dspam > %{version}-%{release}
 Conflicts:	dspam < %{version}-%{release}
+Conflicts:	dspam > %{version}-%{release}
 
 %description client
 dspam client.
@@ -148,8 +150,8 @@ Statyczna biblioteka DSPAM.
 Summary:	HASH driver for DSPAM
 Summary(pl):	Sterownik HASH dla DSPAM-a
 Group:		Libraries
-Requires:	%{name}-libs = %{version}-%{release}
 Requires(post):	sed >= 4.0
+Requires:	%{name}-libs = %{version}-%{release}
 Provides:	%{name}-driver = %{version}-%{release}
 
 %description driver-hash
@@ -162,8 +164,8 @@ Sterownik HASH dla DSPAM-a.
 Summary:	DB driver for DSPAM
 Summary(pl):	Sterownik DB dla DSPAM-a
 Group:		Libraries
-Requires:	%{name}-libs = %{version}-%{release}
 Requires(post):	sed >= 4.0
+Requires:	%{name}-libs = %{version}-%{release}
 Provides:	%{name}-driver = %{version}-%{release}
 
 %description driver-db
@@ -176,8 +178,8 @@ Sterownik DB dla DSPAM-a.
 Summary:	MySQL driver for DSPAM
 Summary(pl):	Sterownik MySQL dla DSPAM-a
 Group:		Libraries
-Requires:	%{name}-libs = %{version}-%{release}
 Requires(post):	sed >= 4.0
+Requires:	%{name}-libs = %{version}-%{release}
 Provides:	%{name}-driver = %{version}-%{release}
 
 %description driver-mysql
@@ -190,8 +192,8 @@ Sterownik MySQL dla DSPAM-a.
 Summary:	PostgreSQL driver for DSPAM
 Summary(pl):	Sterownik PostgreSQL dla DSPAM-a
 Group:		Libraries
-Requires:	%{name}-libs = %{version}-%{release}
 Requires(post):	sed >= 4.0
+Requires:	%{name}-libs = %{version}-%{release}
 Provides:	%{name}-driver = %{version}-%{release}
 
 %description driver-pgsql
@@ -204,8 +206,8 @@ Sterownik PostgreSQL dla DSPAM-a.
 Summary:	SQLite driver for DSPAM
 Summary(pl):	Sterownik SQLite dla DSPAM-a
 Group:		Libraries
-Requires:	%{name}-libs = %{version}-%{release}
 Requires(post):	sed >= 4.0
+Requires:	%{name}-libs = %{version}-%{release}
 Provides:	%{name}-driver = %{version}-%{release}
 
 %description driver-sqlite
