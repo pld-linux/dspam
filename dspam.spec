@@ -32,6 +32,7 @@ BuildRequires:	libtool
 %{?with_mysql:BuildRequires:	mysql-devel}
 BuildRequires:	openldap-devel
 %{?with_pgsql:BuildRequires:	postgresql-devel}
+BuildRequires:	rpmbuild(macros) >= 1.268
 BuildRequires:	sed >= 4.0
 %{?with_sqlite:BuildRequires:	sqlite3-devel}
 BuildRequires:	zlib-devel
@@ -346,17 +347,11 @@ EOF
 
 %post
 /sbin/chkconfig --add dspam
-if [ -f /var/lock/subsys/dspam ]; then
-	/etc/rc.d/init.d/dspam restart 1>&2
-else
-	echo "Run \"/etc/rc.d/init.d/dspam start\" to start dspam daemon."
-fi
+%service dspam restart "dspam daemon"
 
 %preun
 if [ "$1" = "0" ]; then
-	if [ -f /var/lock/subsys/dspam ]; then
-		/etc/rc.d/init.d/dspam stop 1>&2
-	fi
+	%service dspam stop
 	/sbin/chkconfig --del dspam
 fi
 
