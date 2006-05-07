@@ -16,7 +16,7 @@ Summary:	A library and Mail Delivery Agent for Bayesian spam filtering
 Summary(pl):	Biblioteka i MDA do bayesowskiego filtrowania spamu
 Name:		dspam
 Version:	3.6.5
-Release:	0.14
+Release:	0.20
 License:	GPL
 Group:		Applications/Mail
 Source0:	http://www.nuclearelephant.com/projects/dspam/sources/%{name}-%{version}.tar.gz
@@ -223,9 +223,11 @@ SQLite driver for DSPAM.
 Sterownik SQLite dla DSPAM-a.
 
 %package webui
-Summary:	Dspam Web UI
+Summary:	DSPAM Web UI
 Group:		Applications/WWW
 Requires:	webapps
+# needs dspam binary
+Requires:	%{name} = %{version}-%{release}
 
 %description webui
 The Web UI (CGI client) can be run from any executable location on a
@@ -258,6 +260,7 @@ hash_drv
 %{?with_sqlite:sqlite_drv}
 "
 %configure \
+	--disable-dependency-tracking \
 	%{?debug: --enable-debug --enable-bnr-debug --enable-verbose-debug} \
 	--enable-trusted-user-security \
 	--enable-bias \
@@ -271,7 +274,6 @@ hash_drv
 	--with-dspam-owner=none \
 	--with-dspam-group=none \
 	--with-signature-life=14 \
-	--disable-dependency-tracking \
 	--enable-ldap \
 	--enable-clamav \
 	--enable-preferences-extension \
@@ -514,10 +516,10 @@ fi
 %dir %attr(750,root,http) %{_webapps}/%{_webapp}
 %attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) %{_webapps}/%{_webapp}/apache.conf
 %attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) %{_webapps}/%{_webapp}/httpd.conf
-%attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) %{_webapps}/%{_webapp}/htpasswd
-%attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) %{_webapps}/%{_webapp}/admins
-%attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) %{_webapps}/%{_webapp}/configure.pl
-%attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) %{_webapps}/%{_webapp}/default.prefs
+%attr(640,root,http) %config(noreplace) %verify(not md5 mtime size) %{_webapps}/%{_webapp}/htpasswd
+%attr(640,root,http) %config(noreplace) %verify(not md5 mtime size) %{_webapps}/%{_webapp}/admins
+%attr(660,root,http) %config(noreplace) %verify(not md5 mtime size) %{_webapps}/%{_webapp}/default.prefs
+%config(noreplace) %verify(not md5 mtime size) %{_webapps}/%{_webapp}/configure.pl
 
 %dir %{_datadir}/dspam
 %dir %{_datadir}/dspam/cgi
