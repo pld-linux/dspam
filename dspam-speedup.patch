@@ -1,0 +1,36 @@
+--- dspam-3.6.5/src/tools/dspam_clean.c~	2006-01-22 00:56:31.000000000 +0200
++++ dspam-3.6.5/src/tools/dspam_clean.c	2006-05-08 00:46:32.113812576 +0300
+@@ -306,6 +306,7 @@
+   struct nt *del;
+   struct nt_node *node;
+   int delta;
++  time_t t = time(NULL);
+ 
+   del = nt_create(NT_CHAR);
+   if (del == NULL)
+@@ -322,7 +323,7 @@
+     printf ("Signature: %s\n    Created: %s\n", ss->signature,
+             ctime (&ss->created_on));
+ #endif
+-    delta = (((time (NULL) - ss->created_on) / 60) / 60) / 24;
++    delta = (((t - ss->created_on) / 60) / 60) / 24;
+     if (age == 0 || delta > age)
+     {
+ #ifdef DEBUG
+@@ -350,6 +351,7 @@
+   struct _ds_spam_stat s;
+   ds_diction_t del;
+   int delta;
++  time_t t = time(NULL);
+ 
+ #ifdef DEBUG
+   printf("Processing probabilities; age: %d\n", age);
+@@ -366,7 +368,7 @@
+     s.probability = 0.00000;
+     _ds_calc_stat(CTX, NULL, &s, DTT_DEFAULT, NULL);
+     if (s.probability >= 0.3500 && s.probability <= 0.6500) {
+-      delta = (((time (NULL) - sr->last_hit) / 60) / 60) / 24;
++      delta = (((t - sr->last_hit) / 60) / 60) / 24;
+       if (age == 0 || delta > age)
+         ds_diction_touch(del, sr->token, "", 0);
+     }
