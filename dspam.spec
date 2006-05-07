@@ -19,7 +19,7 @@ Summary:	A library and Mail Delivery Agent for Bayesian spam filtering
 Summary(pl):	Biblioteka i MDA do bayesowskiego filtrowania spamu
 Name:		dspam
 Version:	3.6.5
-Release:	0.24
+Release:	0.25
 License:	GPL
 Group:		Applications/Mail
 Source0:	http://www.nuclearelephant.com/projects/dspam/sources/%{name}-%{version}.tar.gz
@@ -250,6 +250,7 @@ password file will suffice for most common installs.
 %patch1 -p1
 sed -i -e 's#\-static##g' src/Makefile* src/*/Makefile*
 %{?with_mysql40:sed -i -e 's#40100#99999#g' src/mysql_drv.c}
+sed -i -e 's,/usr/local/dspam/bin,/usr/bin,' ./scripts/train.pl
 
 %build
 %{__libtoolize}
@@ -306,14 +307,13 @@ hash_drv
 
 %install
 rm -rf $RPM_BUILD_ROOT
-install -d $RPM_BUILD_ROOT{/var/run/dspam,/etc/{rc.d/init.d,sysconfig}}
+install -d $RPM_BUILD_ROOT{/var/run/dspam,/etc/{rc.d/init.d,sysconfig}} \
+	$RPM_BUILD_ROOT/var/lib/%{name}/data
 
 %{__make} install \
 	DESTDIR=$RPM_BUILD_ROOT
 
 install %{SOURCE1} $RPM_BUILD_ROOT/etc/rc.d/init.d/dspam
-
-ln -s /var/log/dspam $RPM_BUILD_ROOT/var/lib/%{name}/log
 
 # install devel files
 install -d $RPM_BUILD_ROOT{%{_includedir}/%{name},/var/{log,lib}/%{name}}
@@ -335,8 +335,6 @@ sed -i -e "s|%{_prefix}/local|%{_prefix}|g" $RPM_BUILD_ROOT%{_bindir}/%{name}_co
 #install dspam-cron.weekly $RPM_BUILD_ROOT%{_sysconfdir}/cron.weekly/%{name}
 
 %if %{with mysql}
-# fix missing file
-install -d $RPM_BUILD_ROOT/var/lib/%{name}
 cat > $RPM_BUILD_ROOT/var/lib/%{name}/mysql.data <<EOF
 _UNCONFIGURED_
 
@@ -353,8 +351,6 @@ EOF
 %endif
 
 %if %{with pgsql}
-# fix missing file
-install -d $RPM_BUILD_ROOT/var/lib/%{name}
 cat > $RPM_BUILD_ROOT/var/lib/%{name}/pgsql.data <<EOF
 _UNCONFIGURED_
 
@@ -432,9 +428,11 @@ fi
 %defattr(644,root,root,755)
 %doc README CHANGELOG RELEASE.NOTES UPGRADING
 %doc doc/{courier,exim,markov,pop3filter,postfix,qmail,relay,sendmail}.txt
+%doc scripts/train.pl
 %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/dspam.conf
 %dir %attr(775,root,mail) /var/run/dspam
-%dir %attr(770,root,mail) /var/lib/%{name}
+%dir %attr(750,root,mail) /var/lib/%{name}
+%dir %attr(770,root,mail) /var/lib/%{name}/data
 %dir %attr(770,root,mail) /var/log/dspam
 %attr(754,root,root) /etc/rc.d/init.d/dspam
 %attr(755,root,root) %config(noreplace) /etc/cron.daily/%{name}
