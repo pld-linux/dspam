@@ -91,8 +91,8 @@
  
  do {
    my($spam, $nonspam, $sm, $fp, $inoc, $wh, $period) = split(/\_/, $FORM{'data'});
---- dspam-3.6.5/webui/cgi-bin/dspam.cgi	2006-05-07 16:33:59.344392362 +0300
-+++ dspam-3.6.5/webui/cgi-bin/dspam.cgi	2006-05-07 16:35:40.756658154 +0300
+--- dspam-3.6.5/webui/cgi-bin/dspam.cgi	2006-05-07 16:35:40.756658154 +0300
++++ dspam-3.6.5/webui/cgi-bin/dspam.cgi	2006-05-07 17:10:23.043206785 +0300
 @@ -25,7 +25,7 @@
  require "ctime.pl";
  
@@ -111,6 +111,15 @@
    while(<FILE>) {
      chomp;
      if ($_ eq $ENV{'REMOTE_USER'}) {
+@@ -625,7 +625,7 @@
+ 
+ 
+     } else {
+-      open(FILE, ">$FILE") || do { &error("Unable to write preferences: $!"); };
++      open(FILE, ">$FILE") || do { &error("Unable to write preferences: $FILE: $!"); };
+       print FILE <<_END;
+ trainingMode=$FORM{'trainingMode'}
+ spamAction=$FORM{'spamAction'}
 @@ -1576,10 +1576,10 @@
  
    if (keys(%PREFS) eq "0" || $CONFIG{'PREFERENCES_EXTENSION'} != 1) {
@@ -179,3 +188,34 @@
      }
                                                                                  
      if (! -e $FILE) {
+--- dspam-3.6.5/webui/cgi-bin/configure.pl.in	2006-05-07 17:06:58.468634350 +0300
++++ dspam-3.6.5/webui/cgi-bin/configure.pl.in	2006-05-07 17:16:07.510906392 +0300
+@@ -33,7 +33,7 @@
+ $CONFIG{'ALL_PROCS'}	= "ps auxw";		# use ps -deaf for Solaris
+ $CONFIG{'MAIL_QUEUE'}   = "mailq | grep '^[0-9,A-F]' | wc -l";
+ 
+-$CONFIG{'WEB_ROOT'}     = ""; # URL location of included htdocs/ files
++$CONFIG{'WEB_ROOT'}     = "/dspam/htdocs"; # URL location of included htdocs/ files
+ 
+ # Default DSPAM display
+ #$CONFIG{'DATE_FORMAT'}  = "%d.%m.%Y %H:%M"; # Date format in strftime style
+@@ -53,14 +53,14 @@
+ $ENV{'PATH'} = "$ENV{'PATH'}:$CONFIG{'DSPAM_BIN'}";
+ 
+ # Autodetect filesystem layout and preference options
+-$CONFIG{'AUTODETECT'} = 1;
++#$CONFIG{'AUTODETECT'} = 1;
+ 
+ # Or, if you're running dspam.cgi as untrusted, it won't be able to auto-detect
+ # so you will need to specify some features manually:
+-#$CONFIG{'AUTODETECT'} = 0;
+-#$CONFIG{'LARGE_SCALE'} = 0;
+-#$CONFIG{'DOMAIN_SCALE'} = 0;
+-#$CONFIG{'PREFERENCES_EXTENSION'} = 0;
++$CONFIG{'AUTODETECT'} = 1;
++$CONFIG{'LARGE_SCALE'} = 1;
++$CONFIG{'DOMAIN_SCALE'} = 0;
++$CONFIG{'PREFERENCES_EXTENSION'} = 1;
+ 
+ $CONFIG{'DSPAM_CGI'} = "dspam.cgi";
+ 
