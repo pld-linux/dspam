@@ -1,9 +1,7 @@
-#
 # TODO:
 # - support for libdclassify
 # - oracle driver
-# - messages from default install of cron with mysql driver
-# Memory fault
+# - messages from default install of cron with mysql driver Memory fault
 #
 # Conditional build:
 %bcond_without	mysql	# disable MySQL storage driver
@@ -13,16 +11,19 @@
 %bcond_without	daemon	# disable daemon mode
 %bcond_with	mysql40 # use with mysql 4.0
 #
+%include	/usr/lib/rpm/macros.perl
 Summary:	A library and Mail Delivery Agent for Bayesian spam filtering
 Summary(pl):	Biblioteka i MDA do bayesowskiego filtrowania spamu
 Name:		dspam
 Version:	3.6.5
-Release:	0.1
+Release:	0.14
 License:	GPL
 Group:		Applications/Mail
 Source0:	http://www.nuclearelephant.com/projects/dspam/sources/%{name}-%{version}.tar.gz
 # Source0-md5:	da4f0e00633bff49d71fde418caaf14b
+Patch0:		%{name}-webui.patch
 Source1:	%{name}.init
+Source2:	%{name}-apache.conf
 URL:		http://www.nuclearelephant.com/projects/dspam/
 BuildRequires:	autoconf
 BuildRequires:	automake
@@ -32,6 +33,7 @@ BuildRequires:	libtool
 %{?with_mysql:BuildRequires:	mysql-devel}
 BuildRequires:	openldap-devel
 %{?with_pgsql:BuildRequires:	postgresql-devel}
+BuildRequires:	rpm-perlprov >= 4.1-13
 BuildRequires:	rpmbuild(macros) >= 1.268
 BuildRequires:	sed >= 4.0
 %{?with_sqlite:BuildRequires:	sqlite3-devel}
@@ -39,6 +41,9 @@ BuildRequires:	zlib-devel
 Requires(post,preun):	/sbin/chkconfig
 Requires:	rc-scripts
 Buildroot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
+
+%define		_webapps	/etc/webapps
+%define		_webapp		%{name}
 
 %description
 DSPAM (as in De-Spam) is an open-source project to create a new kind
@@ -217,8 +222,25 @@ SQLite driver for DSPAM.
 %description driver-sqlite -l pl
 Sterownik SQLite dla DSPAM-a.
 
+%package webui
+Summary:	Dspam Web UI
+Group:		Applications/WWW
+Requires:	webapps
+
+%description webui
+The Web UI (CGI client) can be run from any executable location on a
+web server, and detects its user's identity from the REMOTE_USER
+environment variable. This means you'll need to use HTTP password
+authentication to access the CGI (Any type of authentication will
+work, so long as Apache supports the module). This is also convenient
+in that you can set up authentication using almost any existing system
+you have. The only catch is that you'll need the usernames to match
+the actual DSPAM usernames used the system. A copy of the shadow
+password file will suffice for most common installs.
+
 %prep
 %setup -q
+%patch0 -p1
 sed -i -e 's#\-static##g' src/Makefile* src/*/Makefile*
 %{?with_mysql40:sed -i -e 's#40100#99999#g' src/mysql_drv.c}
 
@@ -304,7 +326,6 @@ chmod 755 $RPM_BUILD_ROOT%{_sysconfdir}/cron.daily/%{name}
 
 # fix prefix
 sed -i -e "s|%{_prefix}/local|%{_prefix}|g" $RPM_BUILD_ROOT%{_bindir}/%{name}_corpus
-sed -i -e "s|%{_prefix}/local|%{_prefix}|g" webui/cgi-bin/dspam.cgi
 
 # fix purge stuff
 #install dspam-cron.weekly $RPM_BUILD_ROOT%{_sysconfdir}/cron.weekly/%{name}
@@ -344,6 +365,11 @@ PASSWORD
 DATABASE
 EOF
 %endif
+
+install -d $RPM_BUILD_ROOT%{_webapps}/%{_webapp}
+install %{SOURCE2} $RPM_BUILD_ROOT%{_webapps}/%{_webapp}/apache.conf
+install %{SOURCE2} $RPM_BUILD_ROOT%{_webapps}/%{_webapp}/httpd.conf
+touch $RPM_BUILD_ROOT%{_webapps}/%{_webapp}/htpasswd
 
 %post
 /sbin/chkconfig --add dspam
@@ -386,10 +412,21 @@ if [ "$1" = "1" ]; then
 	sed -i -e '/^StorageDriver/s,/.*\.so,%{_libdir}/libsqlite_drv.so,' /etc/dspam.conf
 fi
 
+%triggerin webui -- apache1
+%webapp_register apache %{_webapp}
+
+%triggerun webui -- apache1
+%webapp_unregister apache %{_webapp}
+
+%triggerin webui -- apache < 2.2.0, apache-base
+%webapp_register httpd %{_webapp}
+
+%triggerun webui -- apache < 2.2.0, apache-base
+%webapp_unregister httpd %{_webapp}
+
 %files
 %defattr(644,root,root,755)
 %doc README CHANGELOG RELEASE.NOTES UPGRADING
-%doc webui/*/*.{cgi,prefs,txt} webui/*/*.txt webui/*/templates/*.html
 %doc doc/{courier,exim,markov,pop3filter,postfix,qmail,relay,sendmail}.txt
 %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/dspam.conf
 %dir %attr(750,root,mail) /var/lib/%{name}
@@ -471,3 +508,19 @@ fi
 %doc doc/sqlite_drv.txt
 %attr(755,root,root) %{_libdir}/libsqlite_drv*.so*
 %endif
+
+%files webui
+%defattr(644,root,root,755)
+%dir %attr(750,root,http) %{_webapps}/%{_webapp}
+%attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) %{_webapps}/%{_webapp}/apache.conf
+%attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) %{_webapps}/%{_webapp}/httpd.conf
+%attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) %{_webapps}/%{_webapp}/htpasswd
+%attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) %{_webapps}/%{_webapp}/admins
+%attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) %{_webapps}/%{_webapp}/configure.pl
+%attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) %{_webapps}/%{_webapp}/default.prefs
+
+%dir %{_datadir}/dspam
+%dir %{_datadir}/dspam/cgi
+%attr(755,root,root) %{_datadir}/dspam/cgi/*.cgi
+%{_datadir}/dspam/cgi/templates
+%{_datadir}/dspam/htdocs
