@@ -2,13 +2,16 @@
 # - support for libdclassify
 # - oracle driver
 # - messages from default install of cron with mysql driver Memory fault
+# - installing dspam and dspam-client on same host causes
+#   /etc/dspam.conf being owned by both packages and .rpmnew files being
+#   created. move the config to -libs? -common? patch code to use
+#   different config for client?
 #
 # Conditional build:
 %bcond_without	mysql	# disable MySQL storage driver
 %bcond_without	pgsql	# disable PostgreSQL storage driver
 %bcond_without	sqlite	# disable SQLite3 storage driver
 %bcond_without	db	# disable BerkeleyDB storage driver
-%bcond_without	daemon	# disable daemon mode
 %bcond_with	mysql40 # use with mysql 4.0
 #
 %include	/usr/lib/rpm/macros.perl
@@ -16,12 +19,13 @@ Summary:	A library and Mail Delivery Agent for Bayesian spam filtering
 Summary(pl):	Biblioteka i MDA do bayesowskiego filtrowania spamu
 Name:		dspam
 Version:	3.6.5
-Release:	0.20
+Release:	0.24
 License:	GPL
 Group:		Applications/Mail
 Source0:	http://www.nuclearelephant.com/projects/dspam/sources/%{name}-%{version}.tar.gz
 # Source0-md5:	da4f0e00633bff49d71fde418caaf14b
 Patch0:		%{name}-webui.patch
+Patch1:		%{name}-config.patch
 Source1:	%{name}.init
 Source2:	%{name}-apache.conf
 URL:		http://www.nuclearelephant.com/projects/dspam/
@@ -243,6 +247,7 @@ password file will suffice for most common installs.
 %prep
 %setup -q
 %patch0 -p1
+%patch1 -p1
 sed -i -e 's#\-static##g' src/Makefile* src/*/Makefile*
 %{?with_mysql40:sed -i -e 's#40100#99999#g' src/mysql_drv.c}
 
@@ -301,14 +306,13 @@ hash_drv
 
 %install
 rm -rf $RPM_BUILD_ROOT
+install -d $RPM_BUILD_ROOT{/var/run/dspam,/etc/{rc.d/init.d,sysconfig}}
 
 %{__make} install \
 	DESTDIR=$RPM_BUILD_ROOT
 
-install -d $RPM_BUILD_ROOT/{var/run/dspam,/etc/{rc.d/init.d,sysconfig}}
 install %{SOURCE1} $RPM_BUILD_ROOT/etc/rc.d/init.d/dspam
 
-#
 ln -s /var/log/dspam $RPM_BUILD_ROOT/var/lib/%{name}/log
 
 # install devel files
@@ -316,9 +320,7 @@ install -d $RPM_BUILD_ROOT{%{_includedir}/%{name},/var/{log,lib}/%{name}}
 install src/*.h $RPM_BUILD_ROOT%{_includedir}/%{name}
 
 # provide maintenance scripts
-install -d $RPM_BUILD_ROOT/etc/cron.daily
-install -d $RPM_BUILD_ROOT/etc/cron.weekly
-
+install -d $RPM_BUILD_ROOT/etc/cron.{daily,weekly}
 cat > $RPM_BUILD_ROOT/etc/cron.daily/%{name} <<EOF
 #!/bin/sh
 exec %{_bindir}/%{name}_clean -s -p
@@ -431,8 +433,10 @@ fi
 %doc README CHANGELOG RELEASE.NOTES UPGRADING
 %doc doc/{courier,exim,markov,pop3filter,postfix,qmail,relay,sendmail}.txt
 %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/dspam.conf
-%dir %attr(750,root,mail) /var/lib/%{name}
+%dir %attr(775,root,mail) /var/run/dspam
+%dir %attr(770,root,mail) /var/lib/%{name}
 %dir %attr(770,root,mail) /var/log/dspam
+%attr(754,root,root) /etc/rc.d/init.d/dspam
 %attr(755,root,root) %config(noreplace) /etc/cron.daily/%{name}
 %attr(755,root,root) %{_bindir}/%{name}
 %attr(755,root,root) %{_bindir}/%{name}_logrotate
@@ -448,13 +452,9 @@ fi
 %attr(755,root,root) %{_bindir}/%{name}_train
 %{_mandir}/man?/%{name}*
 
-%if %{with daemon}
-%attr(754,root,root) /etc/rc.d/init.d/dspam
 %files client
 %defattr(644,root,root,755)
 %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/dspam.conf
-%attr(770,root,mail) /var/run/dspam
-%endif
 %attr(755,root,root) %{_bindir}/%{name}c
 
 %files libs
