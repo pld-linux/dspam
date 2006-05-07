@@ -1,0 +1,181 @@
+--- dspam-3.6.5/webui/cgi-bin/Makefile.am	2006-05-07 16:07:10.368456730 +0300
++++ dspam-3.6.5/webui/cgi-bin/Makefile.am	2006-05-07 16:23:40.160557961 +0300
+@@ -1,17 +1,21 @@
+ # $Id$
+ #
+ 
+-bin_SCRIPTS = configure_pl
+-CLEANFILES = configure.pl
+-
+-EXTRA_DIST =            \
++bindir = $(pkgdatadir)/cgi
++bin_SCRIPTS = \
+ 	dspam.cgi       \
+ 	graph.cgi       \
++	admin.cgi       \
++	admingraph.cgi
++CLEANFILES = configure.pl
++
++webappdir = /etc/webapps/$(PACKAGE_NAME)
++webapp_DATA = configure.pl \
+ 	default.prefs   \
++	admins
++
++EXTRA_DIST =            \
+ 	rgb.txt         \
+-	admin.cgi       \
+-	admingraph.cgi  \
+-	admins          \
+ 	configure.pl.in
+ 
+ SUBDIRS = templates
+@@ -22,5 +26,5 @@
+ 	-e 's,@bindir\@,$(bindir),g'
+ 
+-configure_pl: configure.pl.in Makefile
++configure.pl: configure.pl.in Makefile
+ 	${sed_substitute_variables} < $(srcdir)/configure.pl.in > configure.pl
+ 
+--- dspam-3.6.5/webui/cgi-bin/templates/Makefile.am	2006-02-13 18:16:57.000000000 +0200
++++ dspam-3.6.5.config/webui/cgi-bin/templates/Makefile.am	2006-05-07 15:24:39.881592142 +0300
+@@ -1,6 +1,7 @@
+ # $Id$
+ 
+-EXTRA_DIST =            \
++templatesdir = $(pkgdatadir)/cgi/templates
++templates_DATA =            \
+         nav_alerts.html \
+         nav_error.html \
+         nav_performance.html \
+--- dspam-3.6.5/webui/htdocs/Makefile.am	2005-07-02 06:59:52.000000000 +0300
++++ dspam-3.6.5.config/webui/htdocs/Makefile.am	2006-05-07 15:25:19.162469057 +0300
+@@ -2,7 +2,8 @@
+ # webui/htdocs/Makefile.am
+ #
+ 
+-EXTRA_DIST =		\
++htdocsdir = $(pkgdatadir)/htdocs
++htdocs_DATA =            \
+ 	base.css	\
+ 	dspam-logo-small.gif
+ 
+--- dspam-3.6.5/webui/cgi-bin/graph.cgi	2006-05-07 16:30:10.239273555 +0300
++++ dspam-3.6.5/webui/cgi-bin/graph.cgi	2006-05-07 16:33:54.974294724 +0300
+@@ -25,11 +25,11 @@
+ use vars qw { %CONFIG %FORM @spam_day @nonspam_day @period @data };
+ 
+ # Read configuration parameters common to all CGI scripts
+-require "configure.pl";
++require "/etc/webapps/dspam/configure.pl";
+ 
+ %FORM = &ReadParse();
+ 
+-GD::Graph::colour::read_rgb("rgb.txt"); 
++GD::Graph::colour::read_rgb("/usr/X11R6/lib/X11/rgb.txt"); 
+ 
+ do {
+   my($spam, $nonspam, $period) = split(/\_/, $FORM{'data'});
+--- dspam-3.6.5/webui/cgi-bin/admingraph.cgi	2006-05-07 16:30:14.049358683 +0300
++++ dspam-3.6.5/webui/cgi-bin/admingraph.cgi	2006-05-07 16:33:57.714355944 +0300
+@@ -24,11 +24,11 @@
+ use vars qw { %CONFIG %FORM @spam @nonspam @period @data @inoc @sm @fp @wh };
+ 
+ # Read configuration parameters common to all CGI scripts
+-require "configure.pl";
++require "/etc/webapps/dspam/configure.pl";
+ 
+ %FORM = &ReadParse();
+ 
+-GD::Graph::colour::read_rgb("rgb.txt"); 
++GD::Graph::colour::read_rgb("/usr/X11R6/lib/X11/rgb.txt"); 
+ 
+ do {
+   my($spam, $nonspam, $sm, $fp, $inoc, $wh, $period) = split(/\_/, $FORM{'data'});
+--- dspam-3.6.5/webui/cgi-bin/dspam.cgi	2006-05-07 16:33:59.344392362 +0300
++++ dspam-3.6.5/webui/cgi-bin/dspam.cgi	2006-05-07 16:35:40.756658154 +0300
+@@ -25,7 +25,7 @@
+ require "ctime.pl";
+ 
+ # Read configuration parameters common to all CGI scripts
+-require "configure.pl";
++require "/etc/webapps/dspam/configure.pl";
+ 
+ if($CONFIG{"DATE_FORMAT"}) {
+   use POSIX qw(strftime);
+@@ -67,7 +67,7 @@
+ 
+ $CONFIG{'ADMIN'} = 0;
+ if ($ENV{'REMOTE_USER'} ne "") {
+-  open(FILE, "<./admins");
++  open(FILE, "</etc/webapps/dspam/admins");
+   while(<FILE>) {
+     chomp;
+     if ($_ eq $ENV{'REMOTE_USER'}) {
+@@ -1576,10 +1576,10 @@
+ 
+   if (keys(%PREFS) eq "0" || $CONFIG{'PREFERENCES_EXTENSION'} != 1) {
+ 
+-    if (! -e "./default.prefs") {
++    if (! -e "/etc/webapps/dspam/default.prefs") {
+       &error("Unable to load default preferences");
+     }
+-    open(FILE, "<./default.prefs");
++    open(FILE, "</etc/webapps/dspam/default.prefs");
+     while(<FILE>) {
+       chomp;
+       my($directive, $value) = split(/\=/);
+--- dspam-3.6.5/webui/cgi-bin/admin.cgi	2006-05-07 16:34:00.934427888 +0300
++++ dspam-3.6.5/webui/cgi-bin/admin.cgi	2006-05-07 16:37:17.648823791 +0300
+@@ -24,7 +24,7 @@
+ require "ctime.pl";
+ 
+ # Read configuration parameters common to all CGI scripts
+-require "configure.pl";
++require "/etc/webapps/dspam/configure.pl";
+ 
+ #
+ # The current CGI script
+@@ -37,7 +37,7 @@
+ #
+ do {
+   my($admin) = 0;
+-  open(FILE, "<./admins");
++  open(FILE, "</etc/webapps/dspam/admins");
+   while(<FILE>) {
+     chomp;
+     if ($_ eq $ENV{'REMOTE_USER'}) {
+@@ -125,14 +125,14 @@
+   $USER = $FORM{'username'};
+ 
+   if ($FORM{'username'} eq "") {
+-    $FILE = "./default.prefs";
++    $FILE = "/etc/webapps/dspam/default.prefs";
+     if ($CONFIG{'PREFERENCES_EXTENSION'} != 1 && ! -l "$CONFIG{'DSPAM_HOME'}/default.prefs") {
+       $DATA{'ERROR'} = "<em>WARNING:</em> " .
+         "These default preferences will not be loaded by DSPAM, but only by ".
+         " the CGI interface when a user initially sets up their preferences. ".
+         "To have DSPAM override its configuration with these default ".
+         "preferences, symlink $CONFIG{'DSPAM_HOME'}/default.prefs to the ".
+-        "default.prefs file in the CGI directory.<BR><BR>";
++        "default.prefs file in the /etc/webapps/dspam directory.<BR><BR>";
+     }
+   } else {
+     $FILE = GetPath($FORM{'username'}) . ".prefs";
+@@ -213,7 +213,7 @@
+   }
+ 
+   if (! -e $FILE) {
+-    %PREFS = GetPrefs($USER, "./default.prefs");
++    %PREFS = GetPrefs($USER, "/etc/webapps/dspam/default.prefs");
+   } else {
+     %PREFS = GetPrefs($USER, $FILE);
+   }
+@@ -704,7 +704,7 @@
+     close(PIPE);
+   } else {
+     if (! -e $FILE) {
+-      $FILE = "./default.prefs";
++      $FILE = "/etc/webapps/dspam/default.prefs";
+     }
+                                                                                 
+     if (! -e $FILE) {
