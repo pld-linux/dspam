@@ -19,13 +19,14 @@ Summary:	A library and Mail Delivery Agent for Bayesian spam filtering
 Summary(pl):	Biblioteka i MDA do bayesowskiego filtrowania spamu
 Name:		dspam
 Version:	3.6.5
-Release:	0.25
+Release:	0.27
 License:	GPL
 Group:		Applications/Mail
 Source0:	http://www.nuclearelephant.com/projects/dspam/sources/%{name}-%{version}.tar.gz
 # Source0-md5:	da4f0e00633bff49d71fde418caaf14b
 Patch0:		%{name}-webui.patch
 Patch1:		%{name}-config.patch
+Patch2:		%{name}-speedup.patch
 Source1:	%{name}.init
 Source2:	%{name}-apache.conf
 URL:		http://www.nuclearelephant.com/projects/dspam/
@@ -248,6 +249,7 @@ password file will suffice for most common installs.
 %setup -q
 %patch0 -p1
 %patch1 -p1
+%patch2 -p1
 sed -i -e 's#\-static##g' src/Makefile* src/*/Makefile*
 %{?with_mysql40:sed -i -e 's#40100#99999#g' src/mysql_drv.c}
 sed -i -e 's,/usr/local/dspam/bin,/usr/bin,' ./scripts/train.pl
@@ -308,12 +310,14 @@ hash_drv
 %install
 rm -rf $RPM_BUILD_ROOT
 install -d $RPM_BUILD_ROOT{/var/run/dspam,/etc/{rc.d/init.d,sysconfig}} \
-	$RPM_BUILD_ROOT/var/lib/%{name}/data
+	$RPM_BUILD_ROOT/var/lib/%{name}/{txt,data}
 
 %{__make} install \
 	DESTDIR=$RPM_BUILD_ROOT
 
 install %{SOURCE1} $RPM_BUILD_ROOT/etc/rc.d/init.d/dspam
+
+cp -a txt/*.txt $RPM_BUILD_ROOT/var/lib/%{name}/txt
 
 # install devel files
 install -d $RPM_BUILD_ROOT{%{_includedir}/%{name},/var/{log,lib}/%{name}}
@@ -433,6 +437,8 @@ fi
 %dir %attr(775,root,mail) /var/run/dspam
 %dir %attr(750,root,mail) /var/lib/%{name}
 %dir %attr(770,root,mail) /var/lib/%{name}/data
+%dir /var/lib/%{name}/txt
+%config(noreplace) %verify(not md5 mtime size) /var/lib/%{name}/txt/*.txt
 %dir %attr(770,root,mail) /var/log/dspam
 %attr(754,root,root) /etc/rc.d/init.d/dspam
 %attr(755,root,root) %config(noreplace) /etc/cron.daily/%{name}
