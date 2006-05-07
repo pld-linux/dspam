@@ -1,0 +1,28 @@
+--- dspam-3.6.5/src/dspam.conf.in	2006-05-07 17:50:47.237384276 +0300
++++ dspam-3.6.5/src/dspam.conf.in	2006-05-07 18:06:11.478026243 +0300
+@@ -635,7 +635,7 @@
+ #
+ #ServerPort		24
+ #ServerQueueSize	32
+-#ServerPID              /var/run/dspam.pid
++ServerPID              /var/run/dspam/dspam.pid
+ 
+ #
+ # ServerMode specifies the type of LMTP server to start. This can be one of:
+@@ -671,14 +671,14 @@
+ # you are running the client and server on the same machine, as it eliminates
+ # much of the bandwidth overhead.
+ #
+-#ServerDomainSocketPath  "/tmp/dspam.sock"
++ServerDomainSocketPath  "/var/run/dspam/dspam.sock"
+ 
+ #
+ # Client Mode: If you are running DSPAM in client/server mode, uncomment and
+ # set these variables. A ClientHost beginning with a / will be treated as
+ # a domain socket.
+ #
+-#ClientHost	/tmp/dspam.sock
++#ClientHost	"/var/run/dspam/dspam.sock"
+ #ClientIdent	"secret@Relay1"
+ #
+ #ClientHost	127.0.0.1
