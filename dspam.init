@@ -30,8 +30,8 @@ case "$1" in
   stop)
 	if [ -f /var/lock/subsys/dspam ]; then
 		msg_stopping dspam
-		killproc dspam
-		rm -f /var/run/dspam.pid /var/lock/subsys/dspam >/dev/null 2>&1
+		killproc --pidfile dspam/dspam.pid dspam
+		rm -f /var/lock/subsys/dspam >/dev/null 2>&1
 	else
 		msg_not_running dspam
 	fi
