@@ -229,6 +229,7 @@ Sterownik SQLite dla DSPAM-a.
 
 %package webui
 Summary:	DSPAM Web UI
+Summary(pl):	Interfejs WWW do programu DSPAM
 Group:		Applications/WWW
 Requires:	webapps
 # needs dspam binary
@@ -244,6 +245,18 @@ in that you can set up authentication using almost any existing system
 you have. The only catch is that you'll need the usernames to match
 the actual DSPAM usernames used the system. A copy of the shadow
 password file will suffice for most common installs.
+
+%description webui -l pl
+Interfejs u¿ytkownika WWW (klient CGI) mo¿e byæ uruchamiany z
+dowolnego wykonywalnego miejsca na serwerze WWW i rozpoznaje to¿samo¶æ
+u¿ytkownika ze zmiennej ¶rodowiskowej REMOTE_USER. Oznacza to, ¿e
+trzeba u¿yæ uwietrzytelnienia HTTP z has³em do dostêpu do CGI (dzia³aæ
+bêdzie dowolny rodzaj uwierzytelnienia obs³ugiwany przez modu³y
+Apache'a). Jest to o tyle wygodne, ¿e mo¿na skonfigurowaæ
+uwierzytelnianie dla prawie ka¿dego istniej±cego systemu. Jedynym
+wymogiem jest, ¿eby nazwy u¿ytkowników pokrywa³y siê z nazwami
+u¿ytkowników DSPAM-a u¿ywanymi w systemie. Kopia pliku shadow
+wystarczy dla wiêkszo¶ci popularnych instalacji.
 
 %prep
 %setup -q
