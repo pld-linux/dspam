@@ -51,7 +51,7 @@ case "$1" in
 		killproc dspam -HUP
 		RETVAL=$?
 	else
-		msg_not_running dspam >&2
+		msg_not_running dspam
 		exit 7
 	fi
 	;;
