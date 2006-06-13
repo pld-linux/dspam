@@ -11,19 +11,18 @@
 %bcond_without	mysql	# disable MySQL storage driver
 %bcond_without	pgsql	# disable PostgreSQL storage driver
 %bcond_without	sqlite	# disable SQLite3 storage driver
-%bcond_without	db	# disable BerkeleyDB storage driver
 %bcond_with	mysql40 # use with mysql 4.0
 #
 %include	/usr/lib/rpm/macros.perl
 Summary:	A library and Mail Delivery Agent for Bayesian spam filtering
 Summary(pl):	Biblioteka i MDA do bayesowskiego filtrowania spamu
 Name:		dspam
-Version:	3.6.5
-Release:	0.27
+Version:	3.6.8
+Release:	0.1
 License:	GPL
 Group:		Applications/Mail
 Source0:	http://www.nuclearelephant.com/projects/dspam/sources/%{name}-%{version}.tar.gz
-# Source0-md5:	da4f0e00633bff49d71fde418caaf14b
+# Source0-md5:	c4b1a7079690ee16d8b0f36b2a2a90a4
 Patch0:		%{name}-webui.patch
 Patch1:		%{name}-config.patch
 Patch2:		%{name}-speedup.patch
@@ -33,7 +32,6 @@ URL:		http://www.nuclearelephant.com/projects/dspam/
 BuildRequires:	autoconf
 BuildRequires:	automake
 BuildRequires:	clamav-devel
-%{?with_db:BuildRequires:	db-devel}
 BuildRequires:	libtool
 %{?with_mysql:BuildRequires:	mysql-devel}
 BuildRequires:	openldap-devel
@@ -171,20 +169,6 @@ HASH driver for DSPAM.
 %description driver-hash -l pl
 Sterownik HASH dla DSPAM-a.
 
-%package driver-db
-Summary:	DB driver for DSPAM
-Summary(pl):	Sterownik DB dla DSPAM-a
-Group:		Libraries
-Requires(post):	sed >= 4.0
-Requires:	%{name}-libs = %{version}-%{release}
-Provides:	%{name}-driver = %{version}-%{release}
-
-%description driver-db
-DB driver for DSPAM.
-
-%description driver-db -l pl
-Sterownik DB dla DSPAM-a.
-
 %package driver-mysql
 Summary:	MySQL driver for DSPAM
 Summary(pl):	Sterownik MySQL dla DSPAM-a
@@ -275,7 +259,6 @@ sed -i -e 's,/usr/local/dspam/bin,/usr/bin,' ./scripts/train.pl
 
 DRIVERS="
 hash_drv
-%{?with_db:libdb4_drv}
 %{?with_mysql:mysql_drv}
 %{?with_pgsql:pgsql_drv}
 %{?with_sqlite:sqlite_drv}
@@ -345,9 +328,6 @@ EOF
 
 chmod 755 $RPM_BUILD_ROOT%{_sysconfdir}/cron.daily/%{name}
 
-# fix prefix
-sed -i -e "s|%{_prefix}/local|%{_prefix}|g" $RPM_BUILD_ROOT%{_bindir}/%{name}_corpus
-
 # fix purge stuff
 #install dspam-cron.weekly $RPM_BUILD_ROOT%{_sysconfdir}/cron.weekly/%{name}
 
@@ -404,11 +384,6 @@ rm -rf $RPM_BUILD_ROOT
 %post	libs -p /sbin/ldconfig
 %postun	libs -p /sbin/ldconfig
 
-%post driver-db
-if [ "$1" = "1" ]; then
-	sed -i -e '/^StorageDriver/s,/.*.so,%{_libdir}/libdb4_drv.so,' /etc/dspam.conf
-fi
-
 %post driver-hash
 if [ "$1" = "1" ]; then
 	sed -i -e '/^StorageDriver/s,/.*\.so,%{_libdir}/libhash_drv.so,' /etc/dspam.conf
@@ -458,10 +433,8 @@ fi
 %attr(755,root,root) %{_bindir}/%{name}
 %attr(755,root,root) %{_bindir}/%{name}_logrotate
 %attr(755,root,root) %{_bindir}/%{name}_clean
-%attr(755,root,root) %{_bindir}/%{name}_corpus
 %attr(755,root,root) %{_bindir}/%{name}_crc
 %attr(755,root,root) %{_bindir}/%{name}_dump
-%attr(755,root,root) %{_bindir}/%{name}_genaliases
 %attr(755,root,root) %{_bindir}/%{name}_stats
 %attr(755,root,root) %{_bindir}/%{name}_merge
 %attr(755,root,root) %{_bindir}/%{name}_2sql
@@ -497,12 +470,6 @@ fi
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_bindir}/css*
 %attr(755,root,root) %{_libdir}/libhash_drv*.so*
-
-%if %{with db}
-%files driver-db
-%defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/libdb4_drv*.so*
-%endif
 
 %if %{with mysql}
 %files driver-mysql
