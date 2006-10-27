@@ -21,14 +21,14 @@ Version:	3.6.8
 Release:	0.1
 License:	GPL
 Group:		Applications/Mail
-Source0:	http://www.nuclearelephant.com/projects/dspam/sources/%{name}-%{version}.tar.gz
+Source0:	http://dspam.nuclearelephant.com/sources/%{name}-%{version}.tar.gz
 # Source0-md5:	c4b1a7079690ee16d8b0f36b2a2a90a4
 Patch0:		%{name}-webui.patch
 Patch1:		%{name}-config.patch
 Patch2:		%{name}-speedup.patch
 Source1:	%{name}.init
 Source2:	%{name}-apache.conf
-URL:		http://www.nuclearelephant.com/projects/dspam/
+URL:		http://dspam.nuclearelephant.com/
 BuildRequires:	autoconf
 BuildRequires:	automake
 BuildRequires:	clamav-devel
