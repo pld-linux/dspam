@@ -15,7 +15,7 @@
 #
 %include	/usr/lib/rpm/macros.perl
 Summary:	A library and Mail Delivery Agent for Bayesian spam filtering
-Summary(pl.UTF-8):   Biblioteka i MDA do bayesowskiego filtrowania spamu
+Summary(pl.UTF-8):	Biblioteka i MDA do bayesowskiego filtrowania spamu
 Name:		dspam
 Version:	3.6.8
 Release:	0.1
@@ -88,7 +88,7 @@ qmailem itd.).
 
 %package client
 Summary:	dspam client
-Summary(pl.UTF-8):   Klient dspam
+Summary(pl.UTF-8):	Klient dspam
 Group:		Applications/Mail
 # to get the same dspam.conf when both installed
 Conflicts:	dspam < %{version}-%{release}
@@ -102,7 +102,7 @@ Klient dspam.
 
 %package libs
 Summary:	A library for Bayesian spam filtering
-Summary(pl.UTF-8):   Biblioteka do bayesowskiego filtrowania spamu
+Summary(pl.UTF-8):	Biblioteka do bayesowskiego filtrowania spamu
 Group:		Libraries
 Requires:	%{name}-driver = %{version}-%{release}
 
@@ -127,7 +127,7 @@ Ten pakiet zawiera wspomnianą bibliotekę.
 
 %package devel
 Summary:	Header files for the DSPAM library
-Summary(pl.UTF-8):   Pliki nagłówkowe biblioteki DSPAM
+Summary(pl.UTF-8):	Pliki nagłówkowe biblioteki DSPAM
 Group:		Development/Libraries
 Requires:	%{name}-libs = %{version}-%{release}
 
@@ -145,7 +145,7 @@ narzędzi antyspamowych i podobnych projektów.
 
 %package static
 Summary:	Static DSPAM library
-Summary(pl.UTF-8):   Statyczna biblioteka DSPAM
+Summary(pl.UTF-8):	Statyczna biblioteka DSPAM
 Group:		Development/Libraries
 Requires:	%{name}-devel = %{version}-%{release}
 
@@ -157,7 +157,7 @@ Statyczna biblioteka DSPAM.
 
 %package driver-hash
 Summary:	HASH driver for DSPAM
-Summary(pl.UTF-8):   Sterownik HASH dla DSPAM-a
+Summary(pl.UTF-8):	Sterownik HASH dla DSPAM-a
 Group:		Libraries
 Requires(post):	sed >= 4.0
 Requires:	%{name}-libs = %{version}-%{release}
@@ -171,7 +171,7 @@ Sterownik HASH dla DSPAM-a.
 
 %package driver-mysql
 Summary:	MySQL driver for DSPAM
-Summary(pl.UTF-8):   Sterownik MySQL dla DSPAM-a
+Summary(pl.UTF-8):	Sterownik MySQL dla DSPAM-a
 Group:		Libraries
 Requires(post):	sed >= 4.0
 Requires:	%{name}-libs = %{version}-%{release}
@@ -185,7 +185,7 @@ Sterownik MySQL dla DSPAM-a.
 
 %package driver-pgsql
 Summary:	PostgreSQL driver for DSPAM
-Summary(pl.UTF-8):   Sterownik PostgreSQL dla DSPAM-a
+Summary(pl.UTF-8):	Sterownik PostgreSQL dla DSPAM-a
 Group:		Libraries
 Requires(post):	sed >= 4.0
 Requires:	%{name}-libs = %{version}-%{release}
@@ -199,7 +199,7 @@ Sterownik PostgreSQL dla DSPAM-a.
 
 %package driver-sqlite
 Summary:	SQLite driver for DSPAM
-Summary(pl.UTF-8):   Sterownik SQLite dla DSPAM-a
+Summary(pl.UTF-8):	Sterownik SQLite dla DSPAM-a
 Group:		Libraries
 Requires(post):	sed >= 4.0
 Requires:	%{name}-libs = %{version}-%{release}
@@ -213,7 +213,7 @@ Sterownik SQLite dla DSPAM-a.
 
 %package webui
 Summary:	DSPAM Web UI
-Summary(pl.UTF-8):   Interfejs WWW do programu DSPAM
+Summary(pl.UTF-8):	Interfejs WWW do programu DSPAM
 Group:		Applications/WWW
 Requires:	webapps
 # needs dspam binary
