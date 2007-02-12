@@ -15,7 +15,7 @@
 #
 %include	/usr/lib/rpm/macros.perl
 Summary:	A library and Mail Delivery Agent for Bayesian spam filtering
-Summary(pl):	Biblioteka i MDA do bayesowskiego filtrowania spamu
+Summary(pl.UTF-8):   Biblioteka i MDA do bayesowskiego filtrowania spamu
 Name:		dspam
 Version:	3.6.8
 Release:	0.1
@@ -66,29 +66,29 @@ works great with Sendmail and Exim, and should work well with any
 other MTA that supports an external local delivery agent (postfix,
 qmail, etc.)
 
-%description -l pl
-DSPAM (czyli De-Spam) to projekt o otwartych ¼ród³ach maj±cy na celu
+%description -l pl.UTF-8
+DSPAM (czyli De-Spam) to projekt o otwartych ÅºrÃ³dÅ‚ach majÄ…cy na celu
 stworzenie nowego rodzaju mechanizmu antyspamowego. Aktualnie jest
-efektywny zarówno jako dzia³aj±cy po stronie serwera agent dla
-uniksowych serwerów pocztowych jak i biblioteka dla programistów
-klientów pocztowych, innych narzêdzi antyspamowych i innych projektów
-wymagaj±cych filtrowania spamu w locie.
+efektywny zarÃ³wno jako dziaÅ‚ajÄ…cy po stronie serwera agent dla
+uniksowych serwerÃ³w pocztowych jak i biblioteka dla programistÃ³w
+klientÃ³w pocztowych, innych narzÄ™dzi antyspamowych i innych projektÃ³w
+wymagajÄ…cych filtrowania spamu w locie.
 
-Agent DSPAM zachowuje siê jak lokalny agent dostarczania poczty (MDA)
-i filtruje/uczy siê spamu przy u¿yciu zaawansowanego bayesowskiego
-przybli¿enia statystycznego (opartego na twierdzeniu Bayesa o
-po³±czonych prawdopodobieñstwach), daj±c nie wymagaj±c± obs³ugi
-administracyjnej, ³atwo ucz±c± siê us³ugê antyspamow± dostosowan± do
-zachowania ka¿dego u¿ytkownika. Metoda jest zaawansowana poniewa¿ na
-podstawie standardowego filtrowania bayesowskiego wprowadzono u¿ycie
-tokenów ³añcuchowych, eliminowanie ukrywanie i inne rozszerzenia.
-DSPAM dzia³a wspaniale z Sendmailem i Eximem, powinien dzia³aæ dobrze
-z ka¿dym innym MTA obs³uguj±cym zewnêtrznego agenta MDA (postfiksem,
+Agent DSPAM zachowuje siÄ™ jak lokalny agent dostarczania poczty (MDA)
+i filtruje/uczy siÄ™ spamu przy uÅ¼yciu zaawansowanego bayesowskiego
+przybliÅ¼enia statystycznego (opartego na twierdzeniu Bayesa o
+poÅ‚Ä…czonych prawdopodobieÅ„stwach), dajÄ…c nie wymagajÄ…cÄ… obsÅ‚ugi
+administracyjnej, Å‚atwo uczÄ…cÄ… siÄ™ usÅ‚ugÄ™ antyspamowÄ… dostosowanÄ… do
+zachowania kaÅ¼dego uÅ¼ytkownika. Metoda jest zaawansowana poniewaÅ¼ na
+podstawie standardowego filtrowania bayesowskiego wprowadzono uÅ¼ycie
+tokenÃ³w Å‚aÅ„cuchowych, eliminowanie ukrywanie i inne rozszerzenia.
+DSPAM dziaÅ‚a wspaniale z Sendmailem i Eximem, powinien dziaÅ‚aÄ‡ dobrze
+z kaÅ¼dym innym MTA obsÅ‚ugujÄ…cym zewnÄ™trznego agenta MDA (postfiksem,
 qmailem itd.).
 
 %package client
 Summary:	dspam client
-Summary(pl):	Klient dspam
+Summary(pl.UTF-8):   Klient dspam
 Group:		Applications/Mail
 # to get the same dspam.conf when both installed
 Conflicts:	dspam < %{version}-%{release}
@@ -97,12 +97,12 @@ Conflicts:	dspam > %{version}-%{release}
 %description client
 dspam client.
 
-%description client -l pl
+%description client -l pl.UTF-8
 Klient dspam.
 
 %package libs
 Summary:	A library for Bayesian spam filtering
-Summary(pl):	Biblioteka do bayesowskiego filtrowania spamu
+Summary(pl.UTF-8):   Biblioteka do bayesowskiego filtrowania spamu
 Group:		Libraries
 Requires:	%{name}-driver = %{version}-%{release}
 
@@ -115,19 +115,19 @@ drop-in spam filtering.
 
 This package contains the library.
 
-%description libs -l pl
-DSPAM (czyli De-Spam) to projekt o otwartych ¼ród³ach maj±cy na celu
+%description libs -l pl.UTF-8
+DSPAM (czyli De-Spam) to projekt o otwartych ÅºrÃ³dÅ‚ach majÄ…cy na celu
 stworzenie nowego rodzaju mechanizmu antyspamowego. Aktualnie jest
-efektywny zarówno jako dzia³aj±cy po stronie serwera agent dla
-uniksowych serwerów pocztowych jak i biblioteka dla programistów
-klientów pocztowych, innych narzêdzi antyspamowych i innych projektów
-wymagaj±cych filtrowania spamu w locie.
+efektywny zarÃ³wno jako dziaÅ‚ajÄ…cy po stronie serwera agent dla
+uniksowych serwerÃ³w pocztowych jak i biblioteka dla programistÃ³w
+klientÃ³w pocztowych, innych narzÄ™dzi antyspamowych i innych projektÃ³w
+wymagajÄ…cych filtrowania spamu w locie.
 
-Ten pakiet zawiera wspomnian± bibliotekê.
+Ten pakiet zawiera wspomnianÄ… bibliotekÄ™.
 
 %package devel
 Summary:	Header files for the DSPAM library
-Summary(pl):	Pliki nag³ówkowe biblioteki DSPAM
+Summary(pl.UTF-8):   Pliki nagÅ‚Ã³wkowe biblioteki DSPAM
 Group:		Development/Libraries
 Requires:	%{name}-libs = %{version}-%{release}
 
@@ -137,27 +137,27 @@ This library can be used by developers to provide 'drop-in' spam
 filtering for their mail client applications, other anti-spam tools,
 or similar projects.
 
-%description devel -l pl
-G³ówny silnik DSPAM zosta³ przeniesiony do oddzielnej biblioteki
-libdspam, która mo¿e byæ u¿ywana przez programistów do zapewnienia
-filtrowania spamu w locie dla aplikacji klientów pocztowych, innych
-narzêdzi antyspamowych i podobnych projektów.
+%description devel -l pl.UTF-8
+GÅ‚Ã³wny silnik DSPAM zostaÅ‚ przeniesiony do oddzielnej biblioteki
+libdspam, ktÃ³ra moÅ¼e byÄ‡ uÅ¼ywana przez programistÃ³w do zapewnienia
+filtrowania spamu w locie dla aplikacji klientÃ³w pocztowych, innych
+narzÄ™dzi antyspamowych i podobnych projektÃ³w.
 
 %package static
 Summary:	Static DSPAM library
-Summary(pl):	Statyczna biblioteka DSPAM
+Summary(pl.UTF-8):   Statyczna biblioteka DSPAM
 Group:		Development/Libraries
 Requires:	%{name}-devel = %{version}-%{release}
 
 %description static
 Static DSPAM library.
 
-%description static -l pl
+%description static -l pl.UTF-8
 Statyczna biblioteka DSPAM.
 
 %package driver-hash
 Summary:	HASH driver for DSPAM
-Summary(pl):	Sterownik HASH dla DSPAM-a
+Summary(pl.UTF-8):   Sterownik HASH dla DSPAM-a
 Group:		Libraries
 Requires(post):	sed >= 4.0
 Requires:	%{name}-libs = %{version}-%{release}
@@ -166,12 +166,12 @@ Provides:	%{name}-driver = %{version}-%{release}
 %description driver-hash
 HASH driver for DSPAM.
 
-%description driver-hash -l pl
+%description driver-hash -l pl.UTF-8
 Sterownik HASH dla DSPAM-a.
 
 %package driver-mysql
 Summary:	MySQL driver for DSPAM
-Summary(pl):	Sterownik MySQL dla DSPAM-a
+Summary(pl.UTF-8):   Sterownik MySQL dla DSPAM-a
 Group:		Libraries
 Requires(post):	sed >= 4.0
 Requires:	%{name}-libs = %{version}-%{release}
@@ -180,12 +180,12 @@ Provides:	%{name}-driver = %{version}-%{release}
 %description driver-mysql
 MySQL driver for DSPAM.
 
-%description driver-mysql -l pl
+%description driver-mysql -l pl.UTF-8
 Sterownik MySQL dla DSPAM-a.
 
 %package driver-pgsql
 Summary:	PostgreSQL driver for DSPAM
-Summary(pl):	Sterownik PostgreSQL dla DSPAM-a
+Summary(pl.UTF-8):   Sterownik PostgreSQL dla DSPAM-a
 Group:		Libraries
 Requires(post):	sed >= 4.0
 Requires:	%{name}-libs = %{version}-%{release}
@@ -194,12 +194,12 @@ Provides:	%{name}-driver = %{version}-%{release}
 %description driver-pgsql
 PostgreSQL driver for DSPAM.
 
-%description driver-pgsql -l pl
+%description driver-pgsql -l pl.UTF-8
 Sterownik PostgreSQL dla DSPAM-a.
 
 %package driver-sqlite
 Summary:	SQLite driver for DSPAM
-Summary(pl):	Sterownik SQLite dla DSPAM-a
+Summary(pl.UTF-8):   Sterownik SQLite dla DSPAM-a
 Group:		Libraries
 Requires(post):	sed >= 4.0
 Requires:	%{name}-libs = %{version}-%{release}
@@ -208,12 +208,12 @@ Provides:	%{name}-driver = %{version}-%{release}
 %description driver-sqlite
 SQLite driver for DSPAM.
 
-%description driver-sqlite -l pl
+%description driver-sqlite -l pl.UTF-8
 Sterownik SQLite dla DSPAM-a.
 
 %package webui
 Summary:	DSPAM Web UI
-Summary(pl):	Interfejs WWW do programu DSPAM
+Summary(pl.UTF-8):   Interfejs WWW do programu DSPAM
 Group:		Applications/WWW
 Requires:	webapps
 # needs dspam binary
@@ -230,17 +230,17 @@ you have. The only catch is that you'll need the usernames to match
 the actual DSPAM usernames used the system. A copy of the shadow
 password file will suffice for most common installs.
 
-%description webui -l pl
-Interfejs u¿ytkownika WWW (klient CGI) mo¿e byæ uruchamiany z
-dowolnego wykonywalnego miejsca na serwerze WWW i rozpoznaje to¿samo¶æ
-u¿ytkownika ze zmiennej ¶rodowiskowej REMOTE_USER. Oznacza to, ¿e
-trzeba u¿yæ uwietrzytelnienia HTTP z has³em do dostêpu do CGI (dzia³aæ
-bêdzie dowolny rodzaj uwierzytelnienia obs³ugiwany przez modu³y
-Apache'a). Jest to o tyle wygodne, ¿e mo¿na skonfigurowaæ
-uwierzytelnianie dla prawie ka¿dego istniej±cego systemu. Jedynym
-wymogiem jest, ¿eby nazwy u¿ytkowników pokrywa³y siê z nazwami
-u¿ytkowników DSPAM-a u¿ywanymi w systemie. Kopia pliku shadow
-wystarczy dla wiêkszo¶ci popularnych instalacji.
+%description webui -l pl.UTF-8
+Interfejs uÅ¼ytkownika WWW (klient CGI) moÅ¼e byÄ‡ uruchamiany z
+dowolnego wykonywalnego miejsca na serwerze WWW i rozpoznaje toÅ¼samoÅ›Ä‡
+uÅ¼ytkownika ze zmiennej Å›rodowiskowej REMOTE_USER. Oznacza to, Å¼e
+trzeba uÅ¼yÄ‡ uwietrzytelnienia HTTP z hasÅ‚em do dostÄ™pu do CGI (dziaÅ‚aÄ‡
+bÄ™dzie dowolny rodzaj uwierzytelnienia obsÅ‚ugiwany przez moduÅ‚y
+Apache'a). Jest to o tyle wygodne, Å¼e moÅ¼na skonfigurowaÄ‡
+uwierzytelnianie dla prawie kaÅ¼dego istniejÄ…cego systemu. Jedynym
+wymogiem jest, Å¼eby nazwy uÅ¼ytkownikÃ³w pokrywaÅ‚y siÄ™ z nazwami
+uÅ¼ytkownikÃ³w DSPAM-a uÅ¼ywanymi w systemie. Kopia pliku shadow
+wystarczy dla wiÄ™kszoÅ›ci popularnych instalacji.
 
 %prep
 %setup -q
