@@ -105,6 +105,7 @@ Summary:	A library for Bayesian spam filtering
 Summary(pl.UTF-8):	Biblioteka do bayesowskiego filtrowania spamu
 Group:		Libraries
 Requires:	%{name}-driver = %{version}-%{release}
+Obsoletes:	dspam-driver-db
 
 %description libs
 DSPAM (as in De-Spam) is an open-source project to create a new kind
