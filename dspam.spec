@@ -42,6 +42,7 @@ BuildRequires:	sed >= 4.0
 %{?with_sqlite:BuildRequires:	sqlite3-devel}
 BuildRequires:	zlib-devel
 Requires(post,preun):	/sbin/chkconfig
+Requires:	%{name}-driver = %{version}-%{release}
 Requires:	rc-scripts
 Buildroot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
@@ -104,7 +105,6 @@ Klient dspam.
 Summary:	A library for Bayesian spam filtering
 Summary(pl.UTF-8):	Biblioteka do bayesowskiego filtrowania spamu
 Group:		Libraries
-Requires:	%{name}-driver = %{version}-%{release}
 Obsoletes:	dspam-driver-db
 
 %description libs
@@ -161,7 +161,7 @@ Summary:	HASH driver for DSPAM
 Summary(pl.UTF-8):	Sterownik HASH dla DSPAM-a
 Group:		Libraries
 Requires(post):	sed >= 4.0
-Requires:	%{name}-libs = %{version}-%{release}
+Requires:	%{name} = %{version}-%{release}
 Provides:	%{name}-driver = %{version}-%{release}
 
 %description driver-hash
@@ -175,7 +175,7 @@ Summary:	MySQL driver for DSPAM
 Summary(pl.UTF-8):	Sterownik MySQL dla DSPAM-a
 Group:		Libraries
 Requires(post):	sed >= 4.0
-Requires:	%{name}-libs = %{version}-%{release}
+Requires:	%{name} = %{version}-%{release}
 Provides:	%{name}-driver = %{version}-%{release}
 
 %description driver-mysql
@@ -189,7 +189,7 @@ Summary:	PostgreSQL driver for DSPAM
 Summary(pl.UTF-8):	Sterownik PostgreSQL dla DSPAM-a
 Group:		Libraries
 Requires(post):	sed >= 4.0
-Requires:	%{name}-libs = %{version}-%{release}
+Requires:	%{name} = %{version}-%{release}
 Provides:	%{name}-driver = %{version}-%{release}
 
 %description driver-pgsql
@@ -203,7 +203,7 @@ Summary:	SQLite driver for DSPAM
 Summary(pl.UTF-8):	Sterownik SQLite dla DSPAM-a
 Group:		Libraries
 Requires(post):	sed >= 4.0
-Requires:	%{name}-libs = %{version}-%{release}
+Requires:	%{name} = %{version}-%{release}
 Provides:	%{name}-driver = %{version}-%{release}
 
 %description driver-sqlite
