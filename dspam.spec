@@ -17,12 +17,12 @@
 Summary:	A library and Mail Delivery Agent for Bayesian spam filtering
 Summary(pl.UTF-8):	Biblioteka i MDA do bayesowskiego filtrowania spamu
 Name:		dspam
-Version:	3.6.8
+Version:	3.8.0
 Release:	0.1
 License:	GPL
 Group:		Applications/Mail
 Source0:	http://dspam.nuclearelephant.com/sources/%{name}-%{version}.tar.gz
-# Source0-md5:	c4b1a7079690ee16d8b0f36b2a2a90a4
+# Source0-md5:	056b8c8b3ad9415a52c01b22ff1e64cf
 Patch0:		%{name}-webui.patch
 Patch1:		%{name}-config.patch
 Patch2:		%{name}-speedup.patch
@@ -386,24 +386,16 @@ rm -rf $RPM_BUILD_ROOT
 %postun	libs -p /sbin/ldconfig
 
 %post driver-hash
-if [ "$1" = "1" ]; then
-	sed -i -e '/^StorageDriver/s,/.*\.so,%{_libdir}/libhash_drv.so,' /etc/dspam.conf
-fi
+%{__sed} -i -e '/^StorageDriver/s,/.*\.so,%{_libdir}/libhash_drv.so,' /etc/dspam.conf
 
 %post driver-mysql
-if [ "$1" = "1" ]; then
-	sed -i -e '/^StorageDriver/s,/.*\.so,%{_libdir}/libmysql_drv.so,' /etc/dspam.conf
-fi
+%{__sed} -i -e '/^StorageDriver/s,/.*\.so,%{_libdir}/libmysql_drv.so,' /etc/dspam.conf
 
 %post driver-pgsql
-if [ "$1" = "1" ]; then
-	sed -i -e '/^StorageDriver/s,/.*\.so,%{_libdir}/libpgsql_drv.so,' /etc/dspam.conf
-fi
+%{__sed} -i -e '/^StorageDriver/s,/.*\.so,%{_libdir}/libpgsql_drv.so,' /etc/dspam.conf
 
 %post driver-sqlite
-if [ "$1" = "1" ]; then
-	sed -i -e '/^StorageDriver/s,/.*\.so,%{_libdir}/libsqlite_drv.so,' /etc/dspam.conf
-fi
+%{__sed} -i -e '/^StorageDriver/s,/.*\.so,%{_libdir}/libsqlite_drv.so,' /etc/dspam.conf
 
 %triggerin webui -- apache1 < 1.3.37-3, apache1-base
 %webapp_register apache %{_webapp}
