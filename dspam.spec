@@ -34,7 +34,7 @@ BuildRequires:	automake
 BuildRequires:	clamav-devel
 BuildRequires:	libtool
 %{?with_mysql:BuildRequires:	mysql-devel}
-BuildRequires:	openldap-devel
+BuildRequires:	openldap-devel >= 2.4.6
 %{?with_pgsql:BuildRequires:	postgresql-devel}
 BuildRequires:	rpm-perlprov >= 4.1-13
 BuildRequires:	rpmbuild(macros) >= 1.268
