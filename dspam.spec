@@ -1,4 +1,6 @@
 # TODO:
+# - it does not build with new autotools. Workaround: use configure provided
+#   by dspam sources
 # - support for libdclassify
 # - oracle driver
 # - messages from default install of cron with mysql driver Memory fault
