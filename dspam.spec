@@ -1,6 +1,4 @@
 # TODO:
-# - it does not build with new autotools. Workaround: use configure provided
-#   by dspam sources
 # - support for libdclassify
 # - oracle driver
 # - messages from default install of cron with mysql driver Memory fault
@@ -20,7 +18,7 @@ Summary:	A library and Mail Delivery Agent for Bayesian spam filtering
 Summary(pl.UTF-8):	Biblioteka i MDA do bayesowskiego filtrowania spamu
 Name:		dspam
 Version:	3.8.0
-Release:	0.1
+Release:	1
 License:	GPL
 Group:		Applications/Mail
 Source0:	http://dspam.nuclearelephant.com/sources/%{name}-%{version}.tar.gz
@@ -28,6 +26,7 @@ Source0:	http://dspam.nuclearelephant.com/sources/%{name}-%{version}.tar.gz
 Patch0:		%{name}-webui.patch
 Patch1:		%{name}-config.patch
 Patch2:		%{name}-speedup.patch
+Patch3:		%{name}-autotools.patch
 Source1:	%{name}.init
 Source2:	%{name}-apache.conf
 URL:		http://dspam.nuclearelephant.com/
@@ -250,6 +249,7 @@ wystarczy dla większości popularnych instalacji.
 %patch0 -p1
 %patch1 -p1
 %patch2 -p1
+%patch3 -p1
 sed -i -e 's#\-static##g' src/Makefile* src/*/Makefile*
 %{?with_mysql40:sed -i -e 's#40100#99999#g' src/mysql_drv.c}
 sed -i -e 's,/usr/local/dspam/bin,/usr/bin,' ./scripts/train.pl
@@ -264,28 +264,22 @@ DRIVERS="
 hash_drv
 %{?with_mysql:mysql_drv}
 %{?with_pgsql:pgsql_drv}
-%{?with_sqlite:sqlite_drv}
+%{?with_sqlite:sqlite3_drv}
 "
 %configure \
 	--disable-dependency-tracking \
 	%{?debug: --enable-debug --enable-bnr-debug --enable-verbose-debug} \
 	--enable-trusted-user-security \
-	--enable-bias \
 	--enable-large-scale \
-	--with-userdir=/var/lib/%{name} \
-	--with-userdir-owner=none \
-	--with-userdir-group=none \
 	--with-dspam-home=/var/lib/%{name} \
 	--with-dspam-home-owner=none \
 	--with-dspam-home-group=none \
 	--with-dspam-owner=none \
 	--with-dspam-group=none \
-	--with-signature-life=14 \
 	--enable-ldap \
 	--enable-clamav \
 	--enable-preferences-extension \
 	--enable-long-usernames \
-	--enable-neural-networking \
 	--enable-virtual-users \
 	--with-storage-driver=$(echo $DRIVERS | tr ' ' ',') \
 %if %{with mysql}
@@ -296,9 +290,11 @@ hash_drv
 	--with-pgsql-includes=%{_includedir}/postgresql \
 	--with-pgsql-libraries=%{_libdir} \
 %endif
+%if 0
 %if %{with sqlite}
-	--with-sqlite3-includes=%{_includedir} \
-	--with-sqlite3-libraries=%{_libdir} \
+	--with-sqlite-includes=%{_includedir} \
+	--with-sqlite-libraries=%{_libdir} \
+%endif
 %endif
 	--enable-daemon
 
@@ -397,7 +393,7 @@ rm -rf $RPM_BUILD_ROOT
 %{__sed} -i -e '/^StorageDriver/s,/.*\.so,%{_libdir}/libpgsql_drv.so,' /etc/dspam.conf
 
 %post driver-sqlite
-%{__sed} -i -e '/^StorageDriver/s,/.*\.so,%{_libdir}/libsqlite_drv.so,' /etc/dspam.conf
+%{__sed} -i -e '/^StorageDriver/s,/.*\.so,%{_libdir}/libsqlite3_drv.so,' /etc/dspam.conf
 
 %triggerin webui -- apache1 < 1.3.37-3, apache1-base
 %webapp_register apache %{_webapp}
@@ -444,34 +440,37 @@ rm -rf $RPM_BUILD_ROOT
 
 %files libs
 %defattr(644,root,root,755)
-%doc README CHANGELOG
-%attr(755,root,root) %{_libdir}/lib*.so.*.*.*
-%attr(755,root,root) %exclude %{_libdir}/lib*_drv*.so*
+%attr(755,root,root) %{_libdir}/libdspam.so.7.0.0
+%attr(755,root,root) %ghost %{_libdir}/libdspam.so.7
 
 %files devel
 %defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/lib*.so
-%attr(755,root,root) %exclude %{_libdir}/lib*_drv*.so*
-%{_libdir}/lib*.la
+%attr(755,root,root) %{_libdir}/libdspam.so
+%attr(755,root,root) %{_libdir}/lib*_drv.so
+%{_libdir}/libdspam.la
+%{_libdir}/lib*_drv.la
 %{_includedir}/%{name}
-%{_mandir}/man3/libdspam*
+%{_mandir}/man3/libdspam.3*
 %{_pkgconfigdir}/*.pc
 
 %files static
 %defattr(644,root,root,755)
-%{_libdir}/lib*.a
+%{_libdir}/libdspam.a
+%{_libdir}/lib*_drv.a
 
 %files driver-hash
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_bindir}/css*
-%attr(755,root,root) %{_libdir}/libhash_drv*.so*
+%attr(755,root,root) %{_libdir}/libhash_drv.so.7.0.0
+%attr(755,root,root) %ghost %{_libdir}/libhash_drv.so.7
 
 %if %{with mysql}
 %files driver-mysql
 %defattr(644,root,root,755)
 %doc doc/mysql_drv.txt src/tools.mysql_drv/*.sql
 %attr(640,root,mail) %config(noreplace) /var/lib/%{name}/mysql.data
-%attr(755,root,root) %{_libdir}/libmysql_drv*.so*
+%attr(755,root,root) %{_libdir}/libmysql_drv.so.7.0.0
+%attr(755,root,root) %ghost %{_libdir}/libmysql_drv.so.7
 %endif
 
 %if %{with pgsql}
@@ -480,14 +479,16 @@ rm -rf $RPM_BUILD_ROOT
 %doc doc/pgsql_drv.txt src/tools.pgsql_drv/*.sql
 %attr(640,root,mail) %config(noreplace) /var/lib/%{name}/pgsql.data
 %attr(755,root,root) %{_bindir}/%{name}_pg2int8
-%attr(755,root,root) %{_libdir}/libpgsql_drv*.so*
+%attr(755,root,root) %{_libdir}/libpgsql_drv.so.7.0.0
+%attr(755,root,root) %ghost %{_libdir}/libpgsql_drv.so.7
 %endif
 
 %if %{with sqlite}
 %files driver-sqlite
 %defattr(644,root,root,755)
 %doc doc/sqlite_drv.txt
-%attr(755,root,root) %{_libdir}/libsqlite_drv*.so*
+%attr(755,root,root) %{_libdir}/libsqlite3_drv.so.7.0.0
+%attr(755,root,root) %ghost %{_libdir}/libsqlite3_drv.so.7
 %endif
 
 %files webui
