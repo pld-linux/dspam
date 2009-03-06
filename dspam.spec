@@ -2,10 +2,6 @@
 # - support for libdclassify
 # - oracle driver
 # - messages from default install of cron with mysql driver Memory fault
-# - installing dspam and dspam-client on same host causes
-#   /etc/dspam.conf being owned by both packages and .rpmnew files being
-#   created. move the config to -libs? -common? patch code to use
-#   different config for client?
 #
 # Conditional build:
 %bcond_without	mysql	# disable MySQL storage driver
@@ -43,6 +39,7 @@ BuildRequires:	sed >= 4.0
 %{?with_sqlite:BuildRequires:	sqlite3-devel}
 BuildRequires:	zlib-devel
 Requires(post,preun):	/sbin/chkconfig
+Requires:	%{name}-common = %{version}-%{release}
 Requires:	%{name}-driver = %{version}-%{release}
 Requires:	rc-scripts
 Buildroot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
@@ -91,16 +88,25 @@ qmailem itd.).
 %package client
 Summary:	dspam client
 Summary(pl.UTF-8):	Klient dspam
+Requires:	%{name}-common
 Group:		Applications/Mail
-# to get the same dspam.conf when both installed
-Conflicts:	dspam < %{version}-%{release}
-Conflicts:	dspam > %{version}-%{release}
 
 %description client
 dspam client.
 
 %description client -l pl.UTF-8
 Klient dspam.
+
+%package common
+Summary:	Common files for dspam packages
+Summary(pl.UTF-8):	Wspólne pliki dla pakietów z dspamem
+Group:		Applications/Mail
+
+%description common
+Common files for dspam and dspam-client packages.
+
+%description client -l pl.UTF-8
+Wspólne pliki dla pakietów dspam i dspam-client.
 
 %package libs
 Summary:	A library for Bayesian spam filtering
@@ -412,7 +418,6 @@ rm -rf $RPM_BUILD_ROOT
 %doc README CHANGELOG RELEASE.NOTES UPGRADING
 %doc doc/{courier,exim,markov,pop3filter,postfix,qmail,relay,sendmail}.txt
 %doc scripts/train.pl
-%config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/dspam.conf
 %dir %attr(775,root,mail) /var/run/dspam
 %dir %attr(750,root,mail) /var/lib/%{name}
 %dir %attr(770,root,mail) /var/lib/%{name}/data
@@ -435,8 +440,11 @@ rm -rf $RPM_BUILD_ROOT
 
 %files client
 %defattr(644,root,root,755)
-%config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/dspam.conf
 %attr(755,root,root) %{_bindir}/%{name}c
+
+%files common
+%defattr(644,root,root,755)
+%config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/dspam.conf
 
 %files libs
 %defattr(644,root,root,755)
