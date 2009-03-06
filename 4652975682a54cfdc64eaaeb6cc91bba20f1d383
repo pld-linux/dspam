@@ -1,0 +1,6 @@
+- *use* sqlite3
+- patched confiure.ac (patch3, thx megabajt)
+- removed TODO line about autoconf problems
+- unified %files (ghost so symlinks etc)
+- it is enough to install README and CHANGELOG once
+- rel 1
