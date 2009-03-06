@@ -88,8 +88,8 @@ qmailem itd.).
 %package client
 Summary:	dspam client
 Summary(pl.UTF-8):	Klient dspam
-Requires:	%{name}-common
 Group:		Applications/Mail
+Requires:	%{name}-common
 
 %description client
 dspam client.
@@ -205,18 +205,19 @@ PostgreSQL driver for DSPAM.
 %description driver-pgsql -l pl.UTF-8
 Sterownik PostgreSQL dla DSPAM-a.
 
-%package driver-sqlite
+%package driver-sqlite3
 Summary:	SQLite driver for DSPAM
 Summary(pl.UTF-8):	Sterownik SQLite dla DSPAM-a
 Group:		Libraries
 Requires(post):	sed >= 4.0
 Requires:	%{name} = %{version}-%{release}
 Provides:	%{name}-driver = %{version}-%{release}
+Obsoletes:	dspam-driver-sqlite
 
-%description driver-sqlite
+%description driver-sqlite3
 SQLite driver for DSPAM.
 
-%description driver-sqlite -l pl.UTF-8
+%description driver-sqlite3 -l pl.UTF-8
 Sterownik SQLite dla DSPAM-a.
 
 %package webui
@@ -398,7 +399,7 @@ rm -rf $RPM_BUILD_ROOT
 %post driver-pgsql
 %{__sed} -i -e '/^StorageDriver/s,/.*\.so,%{_libdir}/libpgsql_drv.so,' /etc/dspam.conf
 
-%post driver-sqlite
+%post driver-sqlite3
 %{__sed} -i -e '/^StorageDriver/s,/.*\.so,%{_libdir}/libsqlite3_drv.so,' /etc/dspam.conf
 
 %triggerin webui -- apache1 < 1.3.37-3, apache1-base
@@ -492,7 +493,7 @@ rm -rf $RPM_BUILD_ROOT
 %endif
 
 %if %{with sqlite}
-%files driver-sqlite
+%files driver-sqlite3
 %defattr(644,root,root,755)
 %doc doc/sqlite_drv.txt
 %attr(755,root,root) %{_libdir}/libsqlite3_drv.so.7.0.0
