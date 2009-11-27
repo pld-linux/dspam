@@ -3,13 +3,14 @@
 # - oracle driver
 # - messages from default install of cron with mysql driver Memory fault
 # - install drivers in /usr/lib/dspam
+# - if drivers are installed to private dir, remove versioned sonames from drivers
 #
 # Conditional build:
 %bcond_without	mysql	# disable MySQL storage driver
 %bcond_without	pgsql	# disable PostgreSQL storage driver
 %bcond_without	sqlite	# disable SQLite3 storage driver
 %bcond_with	mysql40 # use with mysql 4.0
-#
+
 %include	/usr/lib/rpm/macros.perl
 Summary:	A library and Mail Delivery Agent for Bayesian spam filtering
 Summary(pl.UTF-8):	Biblioteka i MDA do bayesowskiego filtrowania spamu
@@ -43,7 +44,7 @@ Requires(post,preun):	/sbin/chkconfig
 Requires:	%{name}-common = %{version}-%{release}
 Requires:	%{name}-driver = %{version}-%{release}
 Requires:	rc-scripts
-Buildroot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
+BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %define		_webapps	/etc/webapps
 %define		_webapp		%{name}
