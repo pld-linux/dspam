@@ -2,6 +2,7 @@
 # - support for libdclassify
 # - oracle driver
 # - messages from default install of cron with mysql driver Memory fault
+# - install drivers in /usr/lib/dspam
 #
 # Conditional build:
 %bcond_without	mysql	# disable MySQL storage driver
@@ -14,7 +15,7 @@ Summary:	A library and Mail Delivery Agent for Bayesian spam filtering
 Summary(pl.UTF-8):	Biblioteka i MDA do bayesowskiego filtrowania spamu
 Name:		dspam
 Version:	3.8.0
-Release:	0.1
+Release:	0.2
 License:	GPL
 Group:		Applications/Mail
 Source0:	http://dspam.nuclearelephant.com/sources/%{name}-%{version}.tar.gz
@@ -455,7 +456,6 @@ rm -rf $RPM_BUILD_ROOT
 %files devel
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/libdspam.so
-%attr(755,root,root) %{_libdir}/lib*_drv.so
 %{_libdir}/libdspam.la
 %{_libdir}/lib*_drv.la
 %{_includedir}/%{name}
@@ -472,6 +472,7 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_bindir}/css*
 %attr(755,root,root) %{_libdir}/libhash_drv.so.7.0.0
 %attr(755,root,root) %ghost %{_libdir}/libhash_drv.so.7
+%{_libdir}/libhash_drv.so
 
 %if %{with mysql}
 %files driver-mysql
@@ -480,6 +481,7 @@ rm -rf $RPM_BUILD_ROOT
 %attr(640,root,mail) %config(noreplace) /var/lib/%{name}/mysql.data
 %attr(755,root,root) %{_libdir}/libmysql_drv.so.7.0.0
 %attr(755,root,root) %ghost %{_libdir}/libmysql_drv.so.7
+%{_libdir}/libmysql_drv.so
 %endif
 
 %if %{with pgsql}
@@ -490,6 +492,7 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_bindir}/%{name}_pg2int8
 %attr(755,root,root) %{_libdir}/libpgsql_drv.so.7.0.0
 %attr(755,root,root) %ghost %{_libdir}/libpgsql_drv.so.7
+%{_libdir}/libpgsql_drv.so
 %endif
 
 %if %{with sqlite}
@@ -498,6 +501,7 @@ rm -rf $RPM_BUILD_ROOT
 %doc doc/sqlite_drv.txt
 %attr(755,root,root) %{_libdir}/libsqlite3_drv.so.7.0.0
 %attr(755,root,root) %ghost %{_libdir}/libsqlite3_drv.so.7
+%{_libdir}/libsqlite3_drv.so
 %endif
 
 %files webui
