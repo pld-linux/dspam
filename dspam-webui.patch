@@ -91,8 +91,8 @@
  
  do {
    my($spam, $nonspam, $sm, $fp, $inoc, $wh, $period) = split(/\_/, $FORM{'data'});
---- dspam-3.6.5/webui/cgi-bin/dspam.cgi	2006-05-07 16:35:40.756658154 +0300
-+++ dspam-3.6.5/webui/cgi-bin/dspam.cgi	2006-05-07 17:10:23.043206785 +0300
+--- dspam-3.8.0/webui/cgi-bin/dspam.cgi.orig	2006-06-01 21:14:14.000000000 +0200
++++ dspam-3.8.0/webui/cgi-bin/dspam.cgi	2009-12-08 00:41:41.991051714 +0100
 @@ -25,7 +25,7 @@
  require "ctime.pl";
  
@@ -111,7 +111,18 @@
    while(<FILE>) {
      chomp;
      if ($_ eq $ENV{'REMOTE_USER'}) {
-@@ -625,7 +625,7 @@
+@@ -532,9 +532,8 @@
+     my $uc_period=uc($period);
+     my $hk="DATA_$uc_period";
+-    my %lst=();
++    my %lst=(spam => [], nonspam => [], title => []);
+     foreach my $hr (sort {$a->{idx}<=>$b->{idx}} (values %{$Stats{$period}})) {
+       foreach my $type (qw( spam nonspam title )) {
+-        (exists $lst{$type}) || ($lst{$type}=[]);
+         push(@{$lst{$type}},$hr->{$type});
+         my $totk="";
+         if ($type eq "spam") { $totk="S"; }
+@@ -625,7 +627,7 @@
  
  
      } else {
@@ -120,7 +131,7 @@
        print FILE <<_END;
  trainingMode=$FORM{'trainingMode'}
  spamAction=$FORM{'spamAction'}
-@@ -1576,10 +1576,10 @@
+@@ -1579,10 +1581,10 @@
  
    if (keys(%PREFS) eq "0" || $CONFIG{'PREFERENCES_EXTENSION'} != 1) {
  
