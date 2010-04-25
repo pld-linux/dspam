@@ -4,6 +4,7 @@
 # - messages from default install of cron with mysql driver Memory fault
 # - install drivers in /usr/lib/dspam
 # - if drivers are installed to private dir, remove versioned sonames from drivers
+# - upgrade to 3.9.0
 #
 # Conditional build:
 %bcond_without	mysql	# disable MySQL storage driver
@@ -16,7 +17,7 @@ Summary:	A library and Mail Delivery Agent for Bayesian spam filtering
 Summary(pl.UTF-8):	Biblioteka i MDA do bayesowskiego filtrowania spamu
 Name:		dspam
 Version:	3.8.0
-Release:	1
+Release:	2
 License:	GPL
 Group:		Applications/Mail
 Source0:	http://dspam.nuclearelephant.com/sources/%{name}-%{version}.tar.gz
@@ -25,6 +26,7 @@ Patch0:		%{name}-webui.patch
 Patch1:		%{name}-config.patch
 Patch2:		%{name}-speedup.patch
 Patch3:		%{name}-autotools.patch
+Patch4:		%{name}-single-char-usernames.patch
 Source1:	%{name}.init
 Source2:	%{name}-apache.conf
 URL:		http://dspam.nuclearelephant.com/
@@ -259,6 +261,7 @@ wystarczy dla większości popularnych instalacji.
 %patch1 -p1
 %patch2 -p1
 %patch3 -p1
+%patch4 -p1
 sed -i -e 's#\-static##g' src/Makefile* src/*/Makefile*
 %{?with_mysql40:sed -i -e 's#40100#99999#g' src/mysql_drv.c}
 sed -i -e 's,/usr/local/dspam/bin,/usr/bin,' ./scripts/train.pl
