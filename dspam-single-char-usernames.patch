@@ -1,0 +1,22 @@
+--- dspam-3.8.0/webui/cgi-bin/dspam.cgi~	2010-04-26 00:01:00.000000000 +0200
++++ dspam-3.8.0/webui/cgi-bin/dspam.cgi	2010-04-26 00:01:47.000000000 +0200
+@@ -1552,7 +1552,7 @@
+       $PATH = "$CONFIG{'DSPAM_HOME'}/data/" . substr($USER, 0, 1) .
+         "/". substr($USER, 1, 1) . "/$USER/$USER";
+     } else {
+-      $PATH = "$CONFIG{'DSPAM_HOME'}/data/$USER/$USER";
++      $PATH = "$CONFIG{'DSPAM_HOME'}/data/$USER/$USER/$USER";
+     }
+     return $PATH;
+   }
+--- dspam-3.8.0/webui/cgi-bin/admin.cgi~	2010-04-26 00:01:00.000000000 +0200
++++ dspam-3.8.0/webui/cgi-bin/admin.cgi	2010-04-26 00:02:09.000000000 +0200
+@@ -683,7 +683,7 @@
+       $USER = "$CONFIG{'DSPAM_HOME'}/data/" . substr($UN, 0, 1) .
+       "/". substr($UN, 1, 1) . "/$UN/$UN";
+     } else {
+-      $USER = "$CONFIG{'DSPAM_HOME'}/data/$UN/$UN";
++      $USER = "$CONFIG{'DSPAM_HOME'}/data/$UN/$UN/$UN";
+     }
+   }
+ 
