@@ -2,9 +2,7 @@
 # - support for libdclassify
 # - oracle driver
 # - messages from default install of cron with mysql driver Memory fault
-# - install drivers in /usr/lib/dspam
-# - if drivers are installed to private dir, remove versioned sonames from drivers
-# - upgrade to 3.9.0
+# - remove versioned sonames from drivers
 #
 # Conditional build:
 %bcond_without	mysql	# disable MySQL storage driver
@@ -461,10 +459,13 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/libdspam.so
 %{_libdir}/libdspam.la
-%{_libdir}/dspam/lib*_drv.la
+%{_libdir}/dspam/libhash_drv.la
+%{_libdir}/dspam/libmysql_drv.la
+%{_libdir}/dspam/libpgsql_drv.la
+%{_libdir}/dspam/libsqlite3_drv.la
 %{_includedir}/%{name}
 %{_mandir}/man3/libdspam.3*
-%{_pkgconfigdir}/*.pc
+%{_pkgconfigdir}/dspam.pc
 
 %files static
 %defattr(644,root,root,755)
