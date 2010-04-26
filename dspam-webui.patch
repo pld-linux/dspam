@@ -59,14 +59,18 @@
  	base.css	\
  	dspam-logo-small.gif
  
---- dspam-3.6.5/webui/cgi-bin/graph.cgi	2006-05-07 16:30:10.239273555 +0300
-+++ dspam-3.6.5/webui/cgi-bin/graph.cgi	2006-05-07 16:33:54.974294724 +0300
-@@ -25,11 +25,11 @@
- use vars qw { %CONFIG %FORM @spam_day @nonspam_day @period @data };
+--- dspam-3.9.0/webui/cgi-bin/graph.cgi~	2010-01-11 22:21:58.000000000 +0100
++++ dspam-3.9.0/webui/cgi-bin/graph.cgi	2010-04-27 00:17:05.000000000 +0200
+@@ -25,7 +25,7 @@
+ use vars qw { %CONFIG %FORM %LANG @spam_day @nonspam_day @period @data };
  
  # Read configuration parameters common to all CGI scripts
 -require "configure.pl";
 +require "/etc/webapps/dspam/configure.pl";
+ 
+ #
+ # Read language file
+@@ -40,7 +40,7 @@
  
  %FORM = &ReadParse();
  
@@ -75,14 +79,18 @@
  
  do {
    my($spam, $nonspam, $period) = split(/\_/, $FORM{'data'});
---- dspam-3.6.5/webui/cgi-bin/admingraph.cgi	2006-05-07 16:30:14.049358683 +0300
-+++ dspam-3.6.5/webui/cgi-bin/admingraph.cgi	2006-05-07 16:33:57.714355944 +0300
-@@ -24,11 +24,11 @@
- use vars qw { %CONFIG %FORM @spam @nonspam @period @data @inoc @sm @fp @wh };
+--- dspam-3.9.0/webui/cgi-bin/admingraph.cgi~	2010-01-11 22:21:58.000000000 +0100
++++ dspam-3.9.0/webui/cgi-bin/admingraph.cgi	2010-04-27 00:20:27.000000000 +0200
+@@ -24,7 +24,7 @@
+ use vars qw { %CONFIG %FORM %LANG @spam @nonspam @period @data @inoc @sm @fp @wh @corpus @virus @black @block };
  
  # Read configuration parameters common to all CGI scripts
 -require "configure.pl";
 +require "/etc/webapps/dspam/configure.pl";
+ 
+ #
+ # Read language file
+@@ -39,7 +39,7 @@
  
  %FORM = &ReadParse();
  
@@ -90,7 +98,7 @@
 +GD::Graph::colour::read_rgb("/usr/X11R6/lib/X11/rgb.txt"); 
  
  do {
-   my($spam, $nonspam, $sm, $fp, $inoc, $wh, $period) = split(/\_/, $FORM{'data'});
+   my($spam, $nonspam, $sm, $fp, $inoc, $wh, $corpus, $virus, $black, $block, $period) = split(/\_/, $FORM{'data'});
 --- dspam-3.8.0/webui/cgi-bin/dspam.cgi.orig	2006-06-01 21:14:14.000000000 +0200
 +++ dspam-3.8.0/webui/cgi-bin/dspam.cgi	2009-12-08 00:41:41.991051714 +0100
 @@ -25,7 +25,7 @@
@@ -111,33 +119,13 @@
    while(<FILE>) {
      chomp;
      if ($_ eq $ENV{'REMOTE_USER'}) {
-@@ -532,9 +532,8 @@
-     my $uc_period=uc($period);
-     my $hk="DATA_$uc_period";
--    my %lst=();
-+    my %lst=(spam => [], nonspam => [], title => []);
-     foreach my $hr (sort {$a->{idx}<=>$b->{idx}} (values %{$Stats{$period}})) {
-       foreach my $type (qw( spam nonspam title )) {
--        (exists $lst{$type}) || ($lst{$type}=[]);
-         push(@{$lst{$type}},$hr->{$type});
-         my $totk="";
-         if ($type eq "spam") { $totk="S"; }
-@@ -625,7 +627,7 @@
- 
- 
-     } else {
--      open(FILE, ">$FILE") || do { &error("Unable to write preferences: $!"); };
-+      open(FILE, ">$FILE") || do { &error("Unable to write preferences: $FILE: $!"); };
-       print FILE <<_END;
- trainingMode=$FORM{'trainingMode'}
- spamAction=$FORM{'spamAction'}
-@@ -1579,10 +1581,10 @@
+@@ -2065,10 +2065,10 @@
  
    if (keys(%PREFS) eq "0" || $CONFIG{'PREFERENCES_EXTENSION'} != 1) {
  
 -    if (! -e "./default.prefs") {
 +    if (! -e "/etc/webapps/dspam/default.prefs") {
-       &error("Unable to load default preferences");
+       &error("$LANG{'error_load_default_prefs'}");
      }
 -    open(FILE, "<./default.prefs");
 +    open(FILE, "</etc/webapps/dspam/default.prefs");
@@ -199,34 +187,34 @@
      }
                                                                                  
      if (! -e $FILE) {
---- dspam-3.6.5/webui/cgi-bin/configure.pl.in	2006-05-07 17:06:58.468634350 +0300
-+++ dspam-3.6.5/webui/cgi-bin/configure.pl.in	2006-05-07 17:16:07.510906392 +0300
-@@ -33,7 +33,7 @@
- $CONFIG{'ALL_PROCS'}	= "ps auxw";		# use ps -deaf for Solaris
- $CONFIG{'MAIL_QUEUE'}   = "mailq | grep '^[0-9,A-F]' | wc -l";
+--- dspam-3.9.0/webui/cgi-bin/configure.pl.in~	2010-01-11 22:21:58.000000000 +0100
++++ dspam-3.9.0/webui/cgi-bin/configure.pl.in	2010-04-27 00:33:18.000000000 +0200
+@@ -34,7 +34,7 @@
+ $CONFIG{'DSPAM_PROCESSES'} = "ps auxw | grep dspam | grep -v 'grep\|cgi\|sock' | wc -l"; # use ps -deaf for Solaris
+ $CONFIG{'MAIL_QUEUE'}	= "mailq | grep '^[0-9,A-F]\{10,12\}[\t ][\t ]*[1-9]' | wc -l";
  
--$CONFIG{'WEB_ROOT'}     = ""; # URL location of included htdocs/ files
-+$CONFIG{'WEB_ROOT'}     = "/dspam/htdocs"; # URL location of included htdocs/ files
+-$CONFIG{'WEB_ROOT'}	= ""; # URL location of included htdocs/ files
++$CONFIG{'WEB_ROOT'}	= "/dspam/htdocs"; # URL location of included htdocs/ files
  
  # Default DSPAM display
- #$CONFIG{'DATE_FORMAT'}  = "%d.%m.%Y %H:%M"; # Date format in strftime style
-@@ -53,14 +53,14 @@
- $ENV{'PATH'} = "$ENV{'PATH'}:$CONFIG{'DSPAM_BIN'}";
+ #$CONFIG{'DATE_FORMAT'}	= "%d.%m.%Y %H:%M"; # Date format in strftime style
+@@ -54,14 +54,14 @@
+ $ENV{'PATH'}		= "$ENV{'PATH'}:$CONFIG{'DSPAM_BIN'}";
  
  # Autodetect filesystem layout and preference options
--$CONFIG{'AUTODETECT'} = 1;
-+#$CONFIG{'AUTODETECT'} = 1;
+-$CONFIG{'AUTODETECT'}	= 1;
++#$CONFIG{'AUTODETECT'}	= 1;
  
  # Or, if you're running dspam.cgi as untrusted, it won't be able to auto-detect
  # so you will need to specify some features manually:
--#$CONFIG{'AUTODETECT'} = 0;
--#$CONFIG{'LARGE_SCALE'} = 0;
--#$CONFIG{'DOMAIN_SCALE'} = 0;
+-#$CONFIG{'AUTODETECT'}	= 0;
+-#$CONFIG{'LARGE_SCALE'}	= 0;
+-#$CONFIG{'DOMAIN_SCALE'}= 0;
 -#$CONFIG{'PREFERENCES_EXTENSION'} = 0;
-+$CONFIG{'AUTODETECT'} = 1;
-+$CONFIG{'LARGE_SCALE'} = 1;
-+$CONFIG{'DOMAIN_SCALE'} = 0;
++$CONFIG{'AUTODETECT'}	= 1;
++$CONFIG{'LARGE_SCALE'}	= 1;
++$CONFIG{'DOMAIN_SCALE'}= 0;
 +$CONFIG{'PREFERENCES_EXTENSION'} = 1;
  
- $CONFIG{'DSPAM_CGI'} = "dspam.cgi";
- 
+ # Get DSPAM version
+ $CONFIG{'DSPAM_VERSION'} = "Unknown Version";
