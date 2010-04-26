@@ -464,7 +464,7 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/libdspam.so
 %{_libdir}/libdspam.la
-%{_libdir}/lib*_drv.la
+%{_libdir}/dspam/lib*_drv.la
 %{_includedir}/%{name}
 %{_mandir}/man3/libdspam.3*
 %{_pkgconfigdir}/*.pc
@@ -472,23 +472,23 @@ rm -rf $RPM_BUILD_ROOT
 %files static
 %defattr(644,root,root,755)
 %{_libdir}/libdspam.a
-%{_libdir}/lib*_drv.a
+%{_libdir}/dspam/lib*_drv.a
 
 %files driver-hash
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_bindir}/css*
-%attr(755,root,root) %{_libdir}/libhash_drv.so.7.0.0
-%attr(755,root,root) %ghost %{_libdir}/libhash_drv.so.7
-%{_libdir}/libhash_drv.so
+%attr(755,root,root) %{_libdir}/dspam/libhash_drv.so.7.0.0
+%attr(755,root,root) %ghost %{_libdir}/dspam/libhash_drv.so.7
+%{_libdir}/dspam/libhash_drv.so
 
 %if %{with mysql}
 %files driver-mysql
 %defattr(644,root,root,755)
 %doc doc/mysql_drv.txt src/tools.mysql_drv/*.sql
 %attr(640,root,mail) %config(noreplace) /var/lib/%{name}/mysql.data
-%attr(755,root,root) %{_libdir}/libmysql_drv.so.7.0.0
-%attr(755,root,root) %ghost %{_libdir}/libmysql_drv.so.7
-%{_libdir}/libmysql_drv.so
+%attr(755,root,root) %{_libdir}/dspam/libmysql_drv.so.7.0.0
+%attr(755,root,root) %ghost %{_libdir}/dspam/libmysql_drv.so.7
+%{_libdir}/dspam/libmysql_drv.so
 %endif
 
 %if %{with pgsql}
@@ -497,18 +497,18 @@ rm -rf $RPM_BUILD_ROOT
 %doc doc/pgsql_drv.txt src/tools.pgsql_drv/*.sql
 %attr(640,root,mail) %config(noreplace) /var/lib/%{name}/pgsql.data
 %attr(755,root,root) %{_bindir}/%{name}_pg2int8
-%attr(755,root,root) %{_libdir}/libpgsql_drv.so.7.0.0
-%attr(755,root,root) %ghost %{_libdir}/libpgsql_drv.so.7
-%{_libdir}/libpgsql_drv.so
+%attr(755,root,root) %{_libdir}/dspam/libpgsql_drv.so.7.0.0
+%attr(755,root,root) %ghost %{_libdir}/dspam/libpgsql_drv.so.7
+%{_libdir}/dspam/libpgsql_drv.so
 %endif
 
 %if %{with sqlite}
 %files driver-sqlite3
 %defattr(644,root,root,755)
 %doc doc/sqlite_drv.txt
-%attr(755,root,root) %{_libdir}/libsqlite3_drv.so.7.0.0
-%attr(755,root,root) %ghost %{_libdir}/libsqlite3_drv.so.7
-%{_libdir}/libsqlite3_drv.so
+%attr(755,root,root) %{_libdir}/dspam/libsqlite3_drv.so.7.0.0
+%attr(755,root,root) %ghost %{_libdir}/dspam/libsqlite3_drv.so.7
+%{_libdir}/dspam/libsqlite3_drv.so
 %endif
 
 %files webui
