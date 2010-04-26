@@ -51,6 +51,9 @@ BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 %define		_webapps	/etc/webapps
 %define		_webapp		%{name}
 
+# Disable parallel build
+%define		_smp_mflags	%{nil}
+
 %description
 DSPAM (as in De-Spam) is an open-source project to create a new kind
 of anti-spam mechanism, and is currently effective as both a
