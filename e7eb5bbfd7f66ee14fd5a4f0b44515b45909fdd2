@@ -1,0 +1,1 @@
+- fix %post scriptlets (now plugins are installed in dspam subdir)
