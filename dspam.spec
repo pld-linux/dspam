@@ -399,16 +399,16 @@ rm -rf $RPM_BUILD_ROOT
 %postun	libs -p /sbin/ldconfig
 
 %post driver-hash
-%{__sed} -i -e '/^StorageDriver/s,/.*\.so,%{_libdir}/libhash_drv.so,' /etc/dspam.conf
+%{__sed} -i -e '/^StorageDriver/s,/.*\.so,%{_libdir}/dspam/libhash_drv.so,' /etc/dspam.conf
 
 %post driver-mysql
-%{__sed} -i -e '/^StorageDriver/s,/.*\.so,%{_libdir}/libmysql_drv.so,' /etc/dspam.conf
+%{__sed} -i -e '/^StorageDriver/s,/.*\.so,%{_libdir}/dspam/libmysql_drv.so,' /etc/dspam.conf
 
 %post driver-pgsql
-%{__sed} -i -e '/^StorageDriver/s,/.*\.so,%{_libdir}/libpgsql_drv.so,' /etc/dspam.conf
+%{__sed} -i -e '/^StorageDriver/s,/.*\.so,%{_libdir}/dspam/libpgsql_drv.so,' /etc/dspam.conf
 
 %post driver-sqlite3
-%{__sed} -i -e '/^StorageDriver/s,/.*\.so,%{_libdir}/libsqlite3_drv.so,' /etc/dspam.conf
+%{__sed} -i -e '/^StorageDriver/s,/.*\.so,%{_libdir}/dspam/libsqlite3_drv.so,' /etc/dspam.conf
 
 %triggerin webui -- apache1 < 1.3.37-3, apache1-base
 %webapp_register apache %{_webapp}
