@@ -426,6 +426,7 @@ rm -rf $RPM_BUILD_ROOT
 %dir %attr(750,root,mail) /var/lib/%{name}
 %dir %attr(770,root,mail) /var/lib/%{name}/data
 %dir /var/lib/%{name}/txt
+%dir %{_libdir}/dspam
 %config(noreplace) %verify(not md5 mtime size) /var/lib/%{name}/txt/*.txt
 %dir %attr(770,root,mail) /var/log/dspam
 %attr(754,root,root) /etc/rc.d/init.d/dspam
@@ -476,7 +477,6 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_bindir}/css*
 %attr(755,root,root) %{_libdir}/dspam/libhash_drv.so.7.0.0
-%attr(755,root,root) %ghost %{_libdir}/dspam/libhash_drv.so.7
 %{_libdir}/dspam/libhash_drv.so
 
 %if %{with mysql}
@@ -485,7 +485,6 @@ rm -rf $RPM_BUILD_ROOT
 %doc doc/mysql_drv.txt src/tools.mysql_drv/*.sql
 %attr(640,root,mail) %config(noreplace) /var/lib/%{name}/mysql.data
 %attr(755,root,root) %{_libdir}/dspam/libmysql_drv.so.7.0.0
-%attr(755,root,root) %ghost %{_libdir}/dspam/libmysql_drv.so.7
 %{_libdir}/dspam/libmysql_drv.so
 %endif
 
@@ -496,7 +495,6 @@ rm -rf $RPM_BUILD_ROOT
 %attr(640,root,mail) %config(noreplace) /var/lib/%{name}/pgsql.data
 %attr(755,root,root) %{_bindir}/%{name}_pg2int8
 %attr(755,root,root) %{_libdir}/dspam/libpgsql_drv.so.7.0.0
-%attr(755,root,root) %ghost %{_libdir}/dspam/libpgsql_drv.so.7
 %{_libdir}/dspam/libpgsql_drv.so
 %endif
 
@@ -505,7 +503,6 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(644,root,root,755)
 %doc doc/sqlite_drv.txt
 %attr(755,root,root) %{_libdir}/dspam/libsqlite3_drv.so.7.0.0
-%attr(755,root,root) %ghost %{_libdir}/dspam/libsqlite3_drv.so.7
 %{_libdir}/dspam/libsqlite3_drv.so
 %endif
 
