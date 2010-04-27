@@ -189,6 +189,16 @@
      if (! -e $FILE) {
 --- dspam-3.9.0/webui/cgi-bin/configure.pl.in~	2010-01-11 22:21:58.000000000 +0100
 +++ dspam-3.9.0/webui/cgi-bin/configure.pl.in	2010-04-27 00:33:18.000000000 +0200
+@@ -25,7 +25,7 @@
+ 
+ # Default DSPAM enviroment
+ $CONFIG{'DSPAM_HOME'}	= "@dspam_home@";
+-$CONFIG{'DSPAM_BIN'}	= "@bindir@";
++$CONFIG{'DSPAM_BIN'}	= "/usr/bin";
+ $CONFIG{'DSPAM'}	= $CONFIG{'DSPAM_BIN'} . "/dspam";
+ $CONFIG{'DSPAM_STATS'}	= $CONFIG{'DSPAM_BIN'} . "/dspam_stats";
+ $CONFIG{'DSPAM_ARGS'}	= "--deliver=innocent --class=innocent " .
+
 @@ -34,7 +34,7 @@
  $CONFIG{'DSPAM_PROCESSES'} = "ps auxw | grep dspam | grep -v 'grep\|cgi\|sock' | wc -l"; # use ps -deaf for Solaris
  $CONFIG{'MAIL_QUEUE'}	= "mailq | grep '^[0-9,A-F]\{10,12\}[\t ][\t ]*[1-9]' | wc -l";
