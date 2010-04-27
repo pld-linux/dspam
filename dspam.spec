@@ -16,9 +16,9 @@ Summary(pl.UTF-8):	Biblioteka i MDA do bayesowskiego filtrowania spamu
 Name:		dspam
 Version:	3.9.0
 Release:	0.1
-License:	GPL
+License:	GPL v2+
 Group:		Applications/Mail
-Source0:	http://downloads.sourceforge.net/project/dspam/dspam/dspam-%{version}/%{name}-%{version}.tar.gz
+Source0:	http://downloads.sourceforge.net/project/dspam/dspam/%{name}-%{version}/%{name}-%{version}.tar.gz
 # Source0-md5:	10d092b57d628d8c91655fee5dc0d0cd
 Patch0:		%{name}-webui.patch
 Patch1:		%{name}-config.patch
