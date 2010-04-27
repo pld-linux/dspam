@@ -460,10 +460,6 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/libdspam.so
 %{_libdir}/libdspam.la
-%{_libdir}/dspam/libhash_drv.la
-%{_libdir}/dspam/libmysql_drv.la
-%{_libdir}/dspam/libpgsql_drv.la
-%{_libdir}/dspam/libsqlite3_drv.la
 %{_includedir}/%{name}
 %{_mandir}/man3/libdspam.3*
 %{_pkgconfigdir}/dspam.pc
@@ -471,7 +467,6 @@ rm -rf $RPM_BUILD_ROOT
 %files static
 %defattr(644,root,root,755)
 %{_libdir}/libdspam.a
-%{_libdir}/dspam/lib*_drv.a
 
 %files driver-hash
 %defattr(644,root,root,755)
