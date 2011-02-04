@@ -107,7 +107,7 @@ Group:		Applications/Mail
 %description common
 Common files for dspam and dspam-client packages.
 
-%description client -l pl.UTF-8
+%description common -l pl.UTF-8
 Wspólne pliki dla pakietów dspam i dspam-client.
 
 %package libs
