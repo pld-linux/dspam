@@ -15,7 +15,7 @@ Summary:	A library and Mail Delivery Agent for Bayesian spam filtering
 Summary(pl.UTF-8):	Biblioteka i MDA do bayesowskiego filtrowania spamu
 Name:		dspam
 Version:	3.9.0
-Release:	4
+Release:	5
 License:	GPL v2+
 Group:		Applications/Mail
 Source0:	http://downloads.sourceforge.net/project/dspam/dspam/%{name}-%{version}/%{name}-%{version}.tar.gz
@@ -48,6 +48,9 @@ BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %define		_webapps	/etc/webapps
 %define		_webapp		%{name}
+
+# symbols are provided by dspam executable
+%define		skip_post_check_so	libdspam.so.7.0.0 lib(hash\|mysql\|pgsql\|sqlite3)_drv.so.7.0.0
 
 %description
 DSPAM (as in De-Spam) is an open-source project to create a new kind
@@ -319,7 +322,7 @@ rm -rf $RPM_BUILD_ROOT
 install -d $RPM_BUILD_ROOT{/var/run/dspam,/etc/{rc.d/init.d,sysconfig}} \
 	$RPM_BUILD_ROOT/var/lib/%{name}/{txt,data}
 
-%{__make} install \
+%{__make} -j1 install \
 	DESTDIR=$RPM_BUILD_ROOT
 
 install %{SOURCE1} $RPM_BUILD_ROOT/etc/rc.d/init.d/dspam
@@ -378,6 +381,9 @@ install -d $RPM_BUILD_ROOT%{_webapps}/%{_webapp}
 install %{SOURCE2} $RPM_BUILD_ROOT%{_webapps}/%{_webapp}/apache.conf
 install %{SOURCE2} $RPM_BUILD_ROOT%{_webapps}/%{_webapp}/httpd.conf
 touch $RPM_BUILD_ROOT%{_webapps}/%{_webapp}/htpasswd
+
+# cleanup
+%{__rm} $RPM_BUILD_ROOT%{_libdir}/dspam/*.{a,la}
 
 %post
 /sbin/chkconfig --add dspam
@@ -473,16 +479,14 @@ rm -rf $RPM_BUILD_ROOT
 %files driver-hash
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_bindir}/css*
-%attr(755,root,root) %{_libdir}/dspam/libhash_drv.so.7.0.0
-%{_libdir}/dspam/libhash_drv.so
+%attr(755,root,root) %{_libdir}/dspam/libhash_drv.so*
 
 %if %{with mysql}
 %files driver-mysql
 %defattr(644,root,root,755)
 %doc doc/mysql_drv.txt src/tools.mysql_drv/*.sql
 %attr(640,root,mail) %config(noreplace) /var/lib/%{name}/mysql.data
-%attr(755,root,root) %{_libdir}/dspam/libmysql_drv.so.7.0.0
-%{_libdir}/dspam/libmysql_drv.so
+%attr(755,root,root) %{_libdir}/dspam/libmysql_drv.so*
 %endif
 
 %if %{with pgsql}
@@ -491,16 +495,14 @@ rm -rf $RPM_BUILD_ROOT
 %doc doc/pgsql_drv.txt src/tools.pgsql_drv/*.sql
 %attr(640,root,mail) %config(noreplace) /var/lib/%{name}/pgsql.data
 %attr(755,root,root) %{_bindir}/%{name}_pg2int8
-%attr(755,root,root) %{_libdir}/dspam/libpgsql_drv.so.7.0.0
-%{_libdir}/dspam/libpgsql_drv.so
+%attr(755,root,root) %{_libdir}/dspam/libpgsql_drv.so*
 %endif
 
 %if %{with sqlite}
 %files driver-sqlite3
 %defattr(644,root,root,755)
 %doc doc/sqlite_drv.txt
-%attr(755,root,root) %{_libdir}/dspam/libsqlite3_drv.so.7.0.0
-%{_libdir}/dspam/libsqlite3_drv.so
+%attr(755,root,root) %{_libdir}/dspam/libsqlite3_drv.so*
 %endif
 
 %files webui
