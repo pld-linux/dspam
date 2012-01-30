@@ -1,0 +1,1 @@
+d /var/run/dspam 0775 root mail -
