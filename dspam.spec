@@ -20,13 +20,14 @@ License:	GPL v2+
 Group:		Applications/Mail
 Source0:	http://downloads.sourceforge.net/project/dspam/dspam/%{name}-%{version}/%{name}-%{version}.tar.gz
 # Source0-md5:	10d092b57d628d8c91655fee5dc0d0cd
+Source1:	%{name}.init
+Source2:	%{name}-apache.conf
+Source3:	%{name}.tmpfiles
 Patch0:		%{name}-webui.patch
 Patch1:		%{name}-config.patch
 Patch2:		%{name}-speedup.patch
 Patch3:		%{name}-autotools.patch
 Patch4:		%{name}-single-char-usernames.patch
-Source1:	%{name}.init
-Source2:	%{name}-apache.conf
 URL:		http://dspam.nuclearelephant.com/
 BuildRequires:	autoconf
 BuildRequires:	automake
@@ -320,7 +321,8 @@ hash_drv
 %install
 rm -rf $RPM_BUILD_ROOT
 install -d $RPM_BUILD_ROOT{/var/run/dspam,/etc/{rc.d/init.d,sysconfig}} \
-	$RPM_BUILD_ROOT/var/lib/%{name}/{txt,data}
+	$RPM_BUILD_ROOT/var/lib/%{name}/{txt,data} \
+	$RPM_BUILD_ROOT/usr/lib/tmpfiles.d
 
 %{__make} -j1 install \
 	DESTDIR=$RPM_BUILD_ROOT
@@ -382,6 +384,8 @@ install %{SOURCE2} $RPM_BUILD_ROOT%{_webapps}/%{_webapp}/apache.conf
 install %{SOURCE2} $RPM_BUILD_ROOT%{_webapps}/%{_webapp}/httpd.conf
 touch $RPM_BUILD_ROOT%{_webapps}/%{_webapp}/htpasswd
 
+install %{SOURCE3} $RPM_BUILD_ROOT/usr/lib/tmpfiles.d/%{name}.conf
+
 # cleanup
 %{__rm} $RPM_BUILD_ROOT%{_libdir}/dspam/*.{a,la}
 
@@ -430,6 +434,7 @@ rm -rf $RPM_BUILD_ROOT
 %doc README CHANGELOG RELEASE.NOTES UPGRADING
 %doc doc/{courier,exim,markov,pop3filter,postfix,qmail,relay,sendmail}.txt
 %doc scripts/train.pl
+/usr/lib/tmpfiles.d/%{name}.conf
 %dir %attr(775,root,mail) /var/run/dspam
 %dir %attr(750,root,mail) /var/lib/%{name}
 %dir %attr(770,root,mail) /var/lib/%{name}/data
