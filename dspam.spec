@@ -15,7 +15,7 @@ Summary:	A library and Mail Delivery Agent for Bayesian spam filtering
 Summary(pl.UTF-8):	Biblioteka i MDA do bayesowskiego filtrowania spamu
 Name:		dspam
 Version:	3.9.0
-Release:	6
+Release:	7
 License:	GPL v2+
 Group:		Applications/Mail
 Source0:	http://downloads.sourceforge.net/project/dspam/dspam/%{name}-%{version}/%{name}-%{version}.tar.gz
@@ -23,6 +23,7 @@ Source0:	http://downloads.sourceforge.net/project/dspam/dspam/%{name}-%{version}
 Source1:	%{name}.init
 Source2:	%{name}-apache.conf
 Source3:	%{name}.tmpfiles
+Source4:	%{name}-httpd.conf
 Patch0:		%{name}-webui.patch
 Patch1:		%{name}-config.patch
 Patch2:		%{name}-speedup.patch
@@ -233,6 +234,7 @@ Group:		Applications/WWW
 Requires:	webapps
 # needs dspam binary
 Requires:	%{name} = %{version}-%{release}
+Conflicts:	apache-base < 2.4.0-1
 
 %description webui
 The Web UI (CGI client) can be run from any executable location on a
@@ -381,7 +383,7 @@ EOF
 
 install -d $RPM_BUILD_ROOT%{_webapps}/%{_webapp}
 install %{SOURCE2} $RPM_BUILD_ROOT%{_webapps}/%{_webapp}/apache.conf
-install %{SOURCE2} $RPM_BUILD_ROOT%{_webapps}/%{_webapp}/httpd.conf
+install %{SOURCE4} $RPM_BUILD_ROOT%{_webapps}/%{_webapp}/httpd.conf
 touch $RPM_BUILD_ROOT%{_webapps}/%{_webapp}/htpasswd
 
 install %{SOURCE3} $RPM_BUILD_ROOT/usr/lib/tmpfiles.d/%{name}.conf
@@ -423,10 +425,10 @@ rm -rf $RPM_BUILD_ROOT
 %triggerun webui -- apache1 < 1.3.37-3, apache1-base
 %webapp_unregister apache %{_webapp}
 
-%triggerin webui -- apache < 2.2.0, apache-base
+%triggerin webui -- apache-base
 %webapp_register httpd %{_webapp}
 
-%triggerun webui -- apache < 2.2.0, apache-base
+%triggerun webui -- apache-base
 %webapp_unregister httpd %{_webapp}
 
 %files
