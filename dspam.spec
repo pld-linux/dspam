@@ -10,7 +10,6 @@
 %bcond_without	sqlite	# disable SQLite3 storage driver
 %bcond_with	mysql40 # use with mysql 4.0
 
-%include	/usr/lib/rpm/macros.perl
 Summary:	A library and Mail Delivery Agent for Bayesian spam filtering
 Summary(pl.UTF-8):	Biblioteka i MDA do bayesowskiego filtrowania spamu
 Name:		dspam
